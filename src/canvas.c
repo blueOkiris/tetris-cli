@@ -29,7 +29,7 @@ void print_canvas(canvas_t canvas) {
         for(int x = 0; x < canvas.width; x++)
             printf("%c", canvas.draw_buffer[y * canvas.width + x]);
         
-        printf("\n");
+        printf("\r\n");
     }
 }
 

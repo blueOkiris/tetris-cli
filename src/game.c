@@ -6,6 +6,7 @@
 #include <tetromino.h>
 #include <canvas.h>
 #include <game.h>
+#include <key.h>
 
 tetromino_t g_current_shape;
 char        g_quit;
@@ -61,6 +62,31 @@ void play() {
     }
 
     cleanup_canvas(g_canvas);
+}
+
+void update_piece() {
+    if(can_move(DOWN))
+        g_current_shape.y++;
+    else {
+        // Shape has landed
+
+        // Save current shape
+        char *image_data = m_get_tetromino_image(g_current_shape);
+        draw_image_to_canvas(&g_canvas, SHAPE_WIDTH * (g_current_shape.x - 2), g_current_shape.y - 2, SHAPE_WIDTH * 5, 5, image_data);
+        free(image_data);
+
+        // Select new shape
+        g_current_shape = select_shape();
+    }
+
+    /*if(g_current_shape.y > g_canvas.height - 2 - 2)
+        g_current_shape = select_shape();*/
+    if(keyboard_hit()) {
+        int key = get_char();
+
+        if(key == 27)                                               // Escape
+            g_quit = 1;
+    }
 }
 
 char overlap(char *data_a, char *canvas_chunk) {
@@ -143,25 +169,6 @@ char can_move(direction_t dir) {
     free(image_data);
 
     return ret;
-}
-
-void update_piece() {
-    if(can_move(DOWN))
-        g_current_shape.y++;
-    else {
-        // Shape has landed
-
-        // Save current shape
-        char *image_data = m_get_tetromino_image(g_current_shape);
-        draw_image_to_canvas(&g_canvas, SHAPE_WIDTH * (g_current_shape.x - 2), g_current_shape.y - 2, SHAPE_WIDTH * 5, 5, image_data);
-        free(image_data);
-
-        // Select new shape
-        g_current_shape = select_shape();
-    }
-
-    /*if(g_current_shape.y > g_canvas.height - 2 - 2)
-        g_current_shape = select_shape();*/
 }
 
 tetromino_t select_shape() {
