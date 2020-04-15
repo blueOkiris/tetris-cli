@@ -25,8 +25,5 @@ all : $(OBJNAME) install
 $(OBJNAME) : $(HFILES) $(SRC)
 	$(CC) $(CFLAGS) $(INC) -o $(OBJNAME) $(SRC) -lm
 
-install : $(OBJNAME)
-	cp $(OBJNAME) /usr/bin/$(OBJNAME)
-
-uninstall : /usr/bin/$(OBJNAME)
-	rm -rf /usr/bin/$(OBJNAME)
+install : $(DESTDIR)
+	cp $(OBJNAME) $(DESTDIR)/$(OBJNAME)
