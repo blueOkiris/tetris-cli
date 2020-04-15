@@ -30,31 +30,7 @@ void play() {
 
     // Draw a border around the screen
     char border[g_canvas.width * g_canvas.height];
-    for(int i = 0; i < g_canvas.width * g_canvas.height; i++)
-        border[i] = -1;
-    border[20] = 'T';
-    border[22] = 'E';
-    border[24] = 'T';
-    border[26] = 'R';
-    border[28] = 'I';
-    border[30] = 'S';
-    for(int i = 0; i < g_canvas.width; i += 4) {
-        border[(g_canvas.height - 1) * g_canvas.width + i] = '[';
-        border[(g_canvas.height - 1) * g_canvas.width + i + 1] = '<';
-        border[(g_canvas.height - 1) * g_canvas.width + i + 2] = '>';
-        border[(g_canvas.height - 1) * g_canvas.width + i + 3] = ']';
-    }
-    for(int i = 1; i < g_canvas.height - 1; i++) {
-        border[i * g_canvas.width] = '[';
-        border[i * g_canvas.width + 1] = '<';
-        border[i * g_canvas.width + 2] = '>';
-        border[i * g_canvas.width + 3] = ']';
-
-        border[i * g_canvas.width + (g_canvas.width - 4)] = '[';
-        border[i * g_canvas.width + (g_canvas.width - 4) + 1] = '<';
-        border[i * g_canvas.width + (g_canvas.width - 4) + 2] = '>';
-        border[i * g_canvas.width + (g_canvas.width - 4) + 3] = ']';
-    }
+    setup_border((char *) border, g_canvas.width * g_canvas.height);
 
     g_quit = 0;
     char *clear_piece, *image_data;
@@ -266,6 +242,34 @@ tetromino_t select_shape() {
     }
     
     return new_shape;
+}
+
+void setup_border(char *border, int size) {
+    for(int i = 0; i < g_canvas.width * g_canvas.height; i++)
+        border[i] = -1;
+    border[20] = 'T';
+    border[22] = 'E';
+    border[24] = 'T';
+    border[26] = 'R';
+    border[28] = 'I';
+    border[30] = 'S';
+    for(int i = 0; i < g_canvas.width; i += 4) {
+        border[(g_canvas.height - 1) * g_canvas.width + i] = '[';
+        border[(g_canvas.height - 1) * g_canvas.width + i + 1] = '<';
+        border[(g_canvas.height - 1) * g_canvas.width + i + 2] = '>';
+        border[(g_canvas.height - 1) * g_canvas.width + i + 3] = ']';
+    }
+    for(int i = 1; i < g_canvas.height - 1; i++) {
+        border[i * g_canvas.width] = '[';
+        border[i * g_canvas.width + 1] = '<';
+        border[i * g_canvas.width + 2] = '>';
+        border[i * g_canvas.width + 3] = ']';
+
+        border[i * g_canvas.width + (g_canvas.width - 4)] = '[';
+        border[i * g_canvas.width + (g_canvas.width - 4) + 1] = '<';
+        border[i * g_canvas.width + (g_canvas.width - 4) + 2] = '>';
+        border[i * g_canvas.width + (g_canvas.width - 4) + 3] = ']';
+    }
 }
 
 void test_draw_tetrominos() {
