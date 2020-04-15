@@ -7,14 +7,18 @@ pkgdesc="A tetris game that runs in a terminal"
 arch=('any')
 url="https://www.github.com/blueOkiris/tetris-cli"
 license=('GPL3')
-source=('$pkgname-$pkgver.tar.gz')
+source=('git://github.com/blueOkiris/tetris-cli.git')
+pre_remove=$pkgname.install
+
+md5sums=('SKIP')
 
 build() {
-	cd "$pkgname-$pkgver"
+	cd tetris-cli
 	make tetris-cli
 }
 
 package() {
-	cd "$pkgname-$pkgver"
+	cd tetris-cli
 	make install
 }
+
