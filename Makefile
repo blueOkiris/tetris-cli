@@ -20,7 +20,13 @@ INC=      $(addprefix -I,$(INCFLDRS))
 
 # Compile
 .PHONY : all
-all : $(OBJNAME)
+all : $(OBJNAME) install
 
 $(OBJNAME) : $(HFILES) $(SRC)
 	$(CC) $(CFLAGS) $(INC) -o $(OBJNAME) $(SRC) -lm
+
+install : $(OBJNAME)
+	sudo cp $(OBJNAME) /usr/bin/$(OBJNAME)
+
+uninstall : /usr/bin/$(OBJNAME)
+	sudo rm -rf /usr/bin/$(OBJNAME)
