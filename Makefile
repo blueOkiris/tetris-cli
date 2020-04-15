@@ -26,7 +26,7 @@ $(OBJNAME) : $(HFILES) $(SRC)
 	$(CC) $(CFLAGS) $(INC) -o $(OBJNAME) $(SRC) -lm
 
 install : $(OBJNAME)
-	sudo cp $(OBJNAME) /usr/bin/$(OBJNAME)
+	cp $(OBJNAME) /usr/bin/$(OBJNAME)
 
 uninstall : /usr/bin/$(OBJNAME)
-	sudo rm -rf /usr/bin/$(OBJNAME)
+	rm -rf /usr/bin/$(OBJNAME)
