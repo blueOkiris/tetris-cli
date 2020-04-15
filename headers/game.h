@@ -5,7 +5,7 @@
 
 // Important game variables
 #define INITIAL_FALL    0.01
-#define FALL_DECREASE   0.001
+#define FALL_INC        0.001
 #define DELAY           10000    //us
 #define FALL_KEY_DELAY  50
 
@@ -17,6 +17,7 @@ void play();
 
 // Support functions for game
 void setup_border(char *border, int size);
+void draw_score();
 
 tetromino_t select_shape();
 void update_piece();
@@ -24,3 +25,5 @@ void update_piece();
 char can_move(direction_t dir);
 char can_rotate(direction_t dir);
 char overlap(char *data_a, char *canvas_chunk);
+
+void check_rows();

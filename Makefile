@@ -23,4 +23,4 @@ INC=      $(addprefix -I,$(INCFLDRS))
 all : $(OBJNAME)
 
 $(OBJNAME) : $(HFILES) $(SRC)
-	$(CC) $(CFLAGS) $(INC) -o $(OBJNAME) $(SRC)
+	$(CC) $(CFLAGS) $(INC) -o $(OBJNAME) $(SRC) -lm

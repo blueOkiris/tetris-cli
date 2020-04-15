@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <time.h>
+#include <math.h>
 
 #include <tetromino.h>
 #include <canvas.h>
@@ -13,6 +14,7 @@ char        g_quit;
 canvas_t    g_canvas;
 float       g_fall_spd;
 int         g_fall_key_delay;
+int         g_score = 0;
 
 // Start a new game
 void play() {
@@ -26,7 +28,7 @@ void play() {
      * 
      * thus 40x20
      */
-    g_canvas = init_canvas((10 + 2) * SHAPE_WIDTH, 22 + 2);
+    g_canvas = init_canvas((10 + 2) * SHAPE_WIDTH, 22 + 1);
 
     // Draw a border around the screen
     char border[g_canvas.width * g_canvas.height];
@@ -36,6 +38,7 @@ void play() {
     char *clear_piece, *image_data;
     g_fall_spd = INITIAL_FALL;
     g_fall_key_delay = FALL_KEY_DELAY;
+    g_score = 0;
 
     while(!g_quit) {
         clear_piece = m_get_tetromino_clear_image(g_current_shape);
@@ -46,6 +49,7 @@ void play() {
         image_data = m_get_tetromino_image(g_current_shape);
         draw_image_to_canvas(&g_canvas, 0, 0, g_canvas.width, g_canvas.height, (char *) border);
         draw_image_to_canvas(&g_canvas, SHAPE_WIDTH * (g_current_shape.x - 2), g_current_shape.y - 2, SHAPE_WIDTH * 5, 5, image_data);
+        draw_score();
 
         print_canvas(g_canvas);
 
@@ -77,11 +81,13 @@ void update_piece() {
             if(can_move(DOWN))
                 g_current_shape.y++;
             else {
-                // Shape has landed
+                // Shape has landed                
                 // Save current shape
                 char *image_data = m_get_tetromino_image(g_current_shape);
                 draw_image_to_canvas(&g_canvas, SHAPE_WIDTH * (g_current_shape.x - 2), ((int) g_current_shape.y) - 2, SHAPE_WIDTH * 5, 5, image_data);
                 free(image_data);
+
+                check_rows();
 
                 // Select new shape
                 g_current_shape = select_shape();
@@ -102,9 +108,41 @@ void update_piece() {
         draw_image_to_canvas(&g_canvas, SHAPE_WIDTH * (g_current_shape.x - 2), ((int) g_current_shape.y) - 2, SHAPE_WIDTH * 5, 5, image_data);
         free(image_data);
 
+        check_rows();
+
         // Select new shape
         g_current_shape = select_shape();
         g_fall_key_delay = FALL_KEY_DELAY;
+    }
+}
+
+// Check for rows and delete them if full
+void check_rows() {
+    for(int y = 2; y < g_canvas.height - 1; y++) {
+        char row_full = 1;
+
+        for(int x = 4; x < g_canvas.width - 4; x++) {
+            if(g_canvas.draw_buffer[y * g_canvas.width + x] == ' ') {
+                row_full = 0;
+                break;
+            }
+        }
+
+        if(row_full) {                                              // YAY POINTS!!
+            // Update game speed and score
+            g_score++;
+            g_fall_spd += FALL_INC;
+
+            // Clear row
+            for(int x = 4; x < g_canvas.width - 4; x++)
+                g_canvas.draw_buffer[y * g_canvas.width + x] = ' ';
+
+            // bring all other rows down
+            for(int y2 = y; y2 >= 2; y2--) {
+                for(int x = 4; x < g_canvas.width - 4; x++)
+                    g_canvas.draw_buffer[y2 * g_canvas.width + x] = g_canvas.draw_buffer[(y2 - 1) * g_canvas.width + x];
+            }
+        }
     }
 }
 
@@ -233,7 +271,7 @@ char can_move(direction_t dir) {
 tetromino_t select_shape() {
     tetromino_t new_shape;
     new_shape.x = 5;
-    new_shape.y = 2;
+    new_shape.y = 3;
     new_shape.shape = rand() % 7;
 
     for(int i = 0; i < 4; i++) {
@@ -244,22 +282,46 @@ tetromino_t select_shape() {
     return new_shape;
 }
 
+void draw_score() {
+    g_canvas.draw_buffer[29] = 'S';
+    g_canvas.draw_buffer[30] = 'C';
+    g_canvas.draw_buffer[31] = 'O';
+    g_canvas.draw_buffer[32] = 'R';
+    g_canvas.draw_buffer[33] = 'E';
+    g_canvas.draw_buffer[35] = '=';
+
+    // Get the first 5 digits of the score
+    char digits[5];
+    int score = g_score;
+
+    for(int i = 0; i < 5; i++) {
+        digits[i] = (score % 10) + '0';
+        score /= 10;
+    }
+    
+    g_canvas.draw_buffer[37] = digits[4];
+    g_canvas.draw_buffer[38] = digits[3];
+    g_canvas.draw_buffer[39] = digits[2];
+    g_canvas.draw_buffer[40] = digits[1];
+    g_canvas.draw_buffer[41] = digits[0];
+}
+
 void setup_border(char *border, int size) {
     for(int i = 0; i < g_canvas.width * g_canvas.height; i++)
         border[i] = -1;
-    border[20] = 'T';
-    border[22] = 'E';
-    border[24] = 'T';
-    border[26] = 'R';
-    border[28] = 'I';
-    border[30] = 'S';
+    border[6] = 'T';
+    border[8] = 'E';
+    border[10] = 'T';
+    border[12] = 'R';
+    border[14] = 'I';
+    border[16] = 'S';
     for(int i = 0; i < g_canvas.width; i += 4) {
         border[(g_canvas.height - 1) * g_canvas.width + i] = '[';
         border[(g_canvas.height - 1) * g_canvas.width + i + 1] = '<';
         border[(g_canvas.height - 1) * g_canvas.width + i + 2] = '>';
         border[(g_canvas.height - 1) * g_canvas.width + i + 3] = ']';
     }
-    for(int i = 1; i < g_canvas.height - 1; i++) {
+    for(int i = 0; i < g_canvas.height - 1; i++) {
         border[i * g_canvas.width] = '[';
         border[i * g_canvas.width + 1] = '<';
         border[i * g_canvas.width + 2] = '>';
