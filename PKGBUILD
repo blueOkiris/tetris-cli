@@ -19,6 +19,7 @@ build() {
 
 package() {
 	cd tetris-cli
-	make install
+	echo "Installing to $pkgdir."
+	make DESTDIR="$pkgdir" install
 }
 
