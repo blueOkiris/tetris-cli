@@ -25,5 +25,5 @@ all : $(OBJNAME) install
 $(OBJNAME) : $(HFILES) $(SRC)
 	$(CC) $(CFLAGS) $(INC) -o $(OBJNAME) $(SRC) -lm
 
-install : $(DESTDIR)
+install :
 	cp $(OBJNAME) "$(DESTDIR)/$(OBJNAME)"
