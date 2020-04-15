@@ -103,7 +103,9 @@ void update_piece() {
         g_current_shape.y += g_fall_spd;
     else if(g_fall_key_delay > 0) {
         g_fall_key_delay--;
-    } else {
+    } else if(g_current_shape.y <= 3)
+        g_quit = 1;                                                 // Game over!!
+    else {
         // Shape has landed
         // Save current shape
         char *image_data = m_get_tetromino_image(g_current_shape);
