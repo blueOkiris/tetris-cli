@@ -4,7 +4,7 @@
 
 Tiny tetris game in a linux terminal
 
-<img src="https://github.com/blueOkiris/tetris-cli/tree/master/screenshot.png"/>
+<img src="https://github.com/blueOkiris/tetris-cli/blob/master/screenshot.png"/>
 
 ## Controls
 
