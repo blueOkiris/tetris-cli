@@ -8,7 +8,7 @@
 typedef enum { T_SHAPE, L_SHAPE, MIRROR_L, S_SHAPE, Z_SHAPE, SQUARE, LINE } shape_t;
 
 typedef struct {
-    int x, y;       // Position of the shape
+    float x, y;     // Position of the shape
 
     shape_t shape;  // Type of tetromino
     int coords[4][2];

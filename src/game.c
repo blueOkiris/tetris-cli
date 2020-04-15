@@ -11,7 +11,8 @@
 tetromino_t g_current_shape;
 char        g_quit;
 canvas_t    g_canvas;
-int         g_delay;
+float       g_fall_spd;
+int         g_fall_key_delay;
 
 // Start a new game
 void play() {
@@ -25,24 +26,34 @@ void play() {
      * 
      * thus 40x20
      */
-    g_canvas = init_canvas(10 * SHAPE_WIDTH + 2, 22 + 2);
+    g_canvas = init_canvas((10 + 2) * SHAPE_WIDTH, 22 + 2);
 
     // Draw a border around the screen
     char border[g_canvas.width * g_canvas.height];
     for(int i = 0; i < g_canvas.width * g_canvas.height; i++)
         border[i] = -1;
-    for(int i = 1; i < g_canvas.width - 1; i++) {
-        border[i] = '-';
-        border[(g_canvas.height - 1) * g_canvas.width + i] = '-';
+    for(int i = 0; i < g_canvas.width; i += 4) {
+        border[(g_canvas.height - 1) * g_canvas.width + i] = '[';
+        border[(g_canvas.height - 1) * g_canvas.width + i + 1] = '8';
+        border[(g_canvas.height - 1) * g_canvas.width + i + 2] = '8';
+        border[(g_canvas.height - 1) * g_canvas.width + i + 3] = ']';
     }
     for(int i = 1; i < g_canvas.height - 1; i++) {
-        border[i * g_canvas.width] = '|';
-        border[i * g_canvas.width + (g_canvas.width - 1)] = '|';
+        border[i * g_canvas.width] = '[';
+        border[i * g_canvas.width + 1] = '8';
+        border[i * g_canvas.width + 2] = '8';
+        border[i * g_canvas.width + 3] = ']';
+
+        border[i * g_canvas.width + (g_canvas.width - 4)] = '[';
+        border[i * g_canvas.width + (g_canvas.width - 4) + 1] = '8';
+        border[i * g_canvas.width + (g_canvas.width - 4) + 2] = '8';
+        border[i * g_canvas.width + (g_canvas.width - 4) + 3] = ']';
     }
 
     g_quit = 0;
     char *clear_piece, *image_data;
-    g_delay = INITIAL_DELAY;
+    g_fall_spd = INITIAL_FALL;
+    g_fall_key_delay = FALL_KEY_DELAY;
 
     while(!g_quit) {
         clear_piece = m_get_tetromino_clear_image(g_current_shape);
@@ -58,34 +69,60 @@ void play() {
 
         free(clear_piece);
         free(image_data);
-        usleep(g_delay);
+        usleep(DELAY);
     }
 
     cleanup_canvas(g_canvas);
 }
 
 void update_piece() {
-    if(can_move(DOWN))
-        g_current_shape.y++;
-    else {
-        // Shape has landed
-
-        // Save current shape
-        char *image_data = m_get_tetromino_image(g_current_shape);
-        draw_image_to_canvas(&g_canvas, SHAPE_WIDTH * (g_current_shape.x - 2), g_current_shape.y - 2, SHAPE_WIDTH * 5, 5, image_data);
-        free(image_data);
-
-        // Select new shape
-        g_current_shape = select_shape();
-    }
-
     /*if(g_current_shape.y > g_canvas.height - 2 - 2)
         g_current_shape = select_shape();*/
     if(keyboard_hit()) {
         int key = get_char();
 
-        if(key == 27)                                               // Escape
+        if(key == 127)                                              // Exit - delete key
             g_quit = 1;
+        else if(key == 'a' && can_move(LEFT))
+            g_current_shape.x--;
+        else if(key == 'd' && can_move(RIGHT))
+            g_current_shape.x++;
+        else if(key == 'q' && can_rotate(LEFT))
+            rotate_tetromino(&g_current_shape, 0);
+        else if(key == 'e' && can_rotate(RIGHT))
+            rotate_tetromino(&g_current_shape, 1);
+        else if(key == 's') {
+            if(can_move(DOWN))
+                g_current_shape.y++;
+            else {
+                // Shape has landed
+                // Save current shape
+                char *image_data = m_get_tetromino_image(g_current_shape);
+                draw_image_to_canvas(&g_canvas, SHAPE_WIDTH * (g_current_shape.x - 2), ((int) g_current_shape.y) - 2, SHAPE_WIDTH * 5, 5, image_data);
+                free(image_data);
+
+                // Select new shape
+                g_current_shape = select_shape();
+            }
+        }
+        
+        //printf("%d\r\n", key);
+    }
+
+    if(can_move(DOWN))
+        g_current_shape.y += g_fall_spd;
+    else if(g_fall_key_delay > 0) {
+        g_fall_key_delay--;
+    } else {
+        // Shape has landed
+        // Save current shape
+        char *image_data = m_get_tetromino_image(g_current_shape);
+        draw_image_to_canvas(&g_canvas, SHAPE_WIDTH * (g_current_shape.x - 2), ((int) g_current_shape.y) - 2, SHAPE_WIDTH * 5, 5, image_data);
+        free(image_data);
+
+        // Select new shape
+        g_current_shape = select_shape();
+        g_fall_key_delay = FALL_KEY_DELAY;
     }
 }
 
@@ -99,6 +136,46 @@ char overlap(char *data_a, char *canvas_chunk) {
     }
 
     return 0;
+}
+
+char can_rotate(direction_t dir) {
+    if(dir == UP || dir == DOWN)
+        return 0;
+    
+    // Create a temporary shape and rotate it
+    tetromino_t temp_shape;
+    temp_shape.x = g_current_shape.x;
+    temp_shape.y = g_current_shape.y;
+    temp_shape.shape = g_current_shape.shape;
+    
+    for(int i = 0; i < 4; i++) {
+        temp_shape.coords[i][0] = g_current_shape.coords[i][0];
+        temp_shape.coords[i][1] = g_current_shape.coords[i][1];
+    }
+
+    rotate_tetromino(&temp_shape, (char) (dir - LEFT));
+
+    // Generate its draw code and see if it overlaps anything
+    char *draw_data = m_get_tetromino_image(temp_shape);
+    char canvas_chunk[5 * (5 * SHAPE_WIDTH)];
+
+    for(int y = 0; y < 5; y++) {
+        for(int x = 0; x < 5; x++) {
+            int g_canvas_x = (g_current_shape.x - 2) + x;
+            int g_canvas_y = ((g_current_shape.y - 2) + y) + 1; // down
+            int g_canvas_ind = g_canvas_y * g_canvas.width + (g_canvas_x * SHAPE_WIDTH);
+            
+            canvas_chunk[y * (SHAPE_WIDTH * 5) + (x * SHAPE_WIDTH)] =       g_canvas.draw_buffer[g_canvas_ind];
+            canvas_chunk[y * (SHAPE_WIDTH * 5) + ((x * SHAPE_WIDTH) + 1)] = g_canvas.draw_buffer[g_canvas_ind + 1];
+            canvas_chunk[y * (SHAPE_WIDTH * 5) + ((x * SHAPE_WIDTH) + 2)] = g_canvas.draw_buffer[g_canvas_ind + 2];
+            canvas_chunk[y * (SHAPE_WIDTH * 5) + ((x * SHAPE_WIDTH) + 3)] = g_canvas.draw_buffer[g_canvas_ind + 3];
+        }
+    }
+
+    char ret = !overlap(draw_data, (char *) canvas_chunk);
+    free(draw_data);
+
+    return ret;
 }
 
 char can_move(direction_t dir) {
@@ -173,8 +250,8 @@ char can_move(direction_t dir) {
 
 tetromino_t select_shape() {
     tetromino_t new_shape;
-    new_shape.x = 3;
-    new_shape.y = 3;
+    new_shape.x = 5;
+    new_shape.y = 2;
     new_shape.shape = rand() % 7;
 
     for(int i = 0; i < 4; i++) {
