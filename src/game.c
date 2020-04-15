@@ -58,6 +58,16 @@ void play() {
         usleep(DELAY);
     }
 
+    // Draw game over
+    draw_game_over();
+    print_canvas(g_canvas);
+
+    char key = 0;
+    while(key != 127) {
+        while(!keyboard_hit());
+        key = get_char();
+    }
+
     cleanup_canvas(g_canvas);
 }
 
@@ -293,6 +303,41 @@ tetromino_t select_shape() {
     }
     
     return new_shape;
+}
+
+void draw_game_over() {
+    for(int i = 4; i < g_canvas.width - 4; i++)
+        g_canvas.draw_buffer[(11 * g_canvas.width) + i] = ' ';
+
+    for(int i = 4; i < g_canvas.width - 4; i++)
+        g_canvas.draw_buffer[(13 * g_canvas.width) + i] = ' ';
+
+    g_canvas.draw_buffer[11 * g_canvas.width + 15] = 'G';
+    g_canvas.draw_buffer[11 * g_canvas.width + 17] = 'A';
+    g_canvas.draw_buffer[11 * g_canvas.width + 19] = 'M';
+    g_canvas.draw_buffer[11 * g_canvas.width + 21] = 'E';
+    g_canvas.draw_buffer[11 * g_canvas.width + 25] = 'O';
+    g_canvas.draw_buffer[11 * g_canvas.width + 27] = 'V';
+    g_canvas.draw_buffer[11 * g_canvas.width + 29] = 'E';
+    g_canvas.draw_buffer[11 * g_canvas.width + 31] = 'R';
+
+    g_canvas.draw_buffer[13 * g_canvas.width + 5] = 'P';
+    g_canvas.draw_buffer[13 * g_canvas.width + 7] = 'r';
+    g_canvas.draw_buffer[13 * g_canvas.width + 9] = 'e';
+    g_canvas.draw_buffer[13 * g_canvas.width + 11] = 's';
+    g_canvas.draw_buffer[13 * g_canvas.width + 13] = 's';
+    g_canvas.draw_buffer[13 * g_canvas.width + 17] = 'B';
+    g_canvas.draw_buffer[13 * g_canvas.width + 19] = 'A';
+    g_canvas.draw_buffer[13 * g_canvas.width + 21] = 'C';
+    g_canvas.draw_buffer[13 * g_canvas.width + 23] = 'K';
+    g_canvas.draw_buffer[13 * g_canvas.width + 27] = 't';
+    g_canvas.draw_buffer[13 * g_canvas.width + 29] = 'o';
+    g_canvas.draw_buffer[13 * g_canvas.width + 33] = 'R';
+    g_canvas.draw_buffer[13 * g_canvas.width + 35] = 'e';
+    g_canvas.draw_buffer[13 * g_canvas.width + 37] = 's';
+    g_canvas.draw_buffer[13 * g_canvas.width + 39] = 'e';
+    g_canvas.draw_buffer[13 * g_canvas.width + 41] = 't';
+    g_canvas.draw_buffer[13 * g_canvas.width + 43] = '.';
 }
 
 void draw_score() {

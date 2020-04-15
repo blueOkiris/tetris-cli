@@ -18,6 +18,7 @@ void play();
 // Support functions for game
 void setup_border(char *border, int size);
 void draw_score();
+void draw_game_over();
 
 tetromino_t select_shape();
 void update_piece();
