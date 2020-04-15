@@ -1,4 +1,4 @@
-# Maintainer: Your Name <youremail@domain.com>
+# Maintainer: Dylan Turner dylantdmt@gmail.com
 pkgname=tetris-cli-git
 pkgver=1.0
 pkgrel=1
