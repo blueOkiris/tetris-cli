@@ -307,10 +307,16 @@ tetromino_t select_shape() {
 
 void draw_game_over() {
     for(int i = 4; i < g_canvas.width - 4; i++)
+        g_canvas.draw_buffer[(10 * g_canvas.width) + i] = ' ';
+
+    for(int i = 4; i < g_canvas.width - 4; i++)
         g_canvas.draw_buffer[(11 * g_canvas.width) + i] = ' ';
 
     for(int i = 4; i < g_canvas.width - 4; i++)
         g_canvas.draw_buffer[(13 * g_canvas.width) + i] = ' ';
+
+    for(int i = 4; i < g_canvas.width - 4; i++)
+        g_canvas.draw_buffer[(14 * g_canvas.width) + i] = ' ';
 
     g_canvas.draw_buffer[11 * g_canvas.width + 15] = 'G';
     g_canvas.draw_buffer[11 * g_canvas.width + 17] = 'A';
