@@ -87,6 +87,8 @@ void update_piece() {
                 draw_image_to_canvas(&g_canvas, SHAPE_WIDTH * (g_current_shape.x - 2), ((int) g_current_shape.y) - 2, SHAPE_WIDTH * 5, 5, image_data);
                 free(image_data);
 
+                g_score += 10 + (g_fall_spd * 50);
+
                 check_rows();
 
                 // Select new shape
@@ -108,6 +110,8 @@ void update_piece() {
         draw_image_to_canvas(&g_canvas, SHAPE_WIDTH * (g_current_shape.x - 2), ((int) g_current_shape.y) - 2, SHAPE_WIDTH * 5, 5, image_data);
         free(image_data);
 
+        g_score += 10 + (g_fall_spd * 50);
+
         check_rows();
 
         // Select new shape
@@ -118,6 +122,8 @@ void update_piece() {
 
 // Check for rows and delete them if full
 void check_rows() {
+    int rows_filled = 0;
+
     for(int y = 2; y < g_canvas.height - 1; y++) {
         char row_full = 1;
 
@@ -130,7 +136,7 @@ void check_rows() {
 
         if(row_full) {                                              // YAY POINTS!!
             // Update game speed and score
-            g_score++;
+            rows_filled++;
             g_fall_spd += FALL_INC;
 
             // Clear row
@@ -144,6 +150,11 @@ void check_rows() {
             }
         }
     }
+
+    if(rows_filled == 1)
+        g_score += 100;
+    else if(rows_filled > 1)
+        g_score += 100 * ((rows_filled - 1) << 1);                  // 200, 400, 600
 }
 
 char overlap(char *data_a, char *canvas_chunk) {
