@@ -20,7 +20,7 @@ INC=      $(addprefix -I,$(INCFLDRS))
 
 # Compile
 .PHONY : all
-all : $(OBJNAME) install
+all : $(OBJNAME)
 
 $(OBJNAME) : $(HFILES) $(SRC)
 	$(CC) $(CFLAGS) $(INC) -o $(OBJNAME) $(SRC) -lm
