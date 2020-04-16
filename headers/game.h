@@ -6,14 +6,14 @@
 // Important game variables
 #define INITIAL_FALL    0.01
 #define FALL_INC        0.001
-#define DELAY           10000    //us
+#define DEFAULT_DELAY   10000    //us
 #define FALL_KEY_DELAY  50
 
 typedef enum { UP, DOWN, LEFT, RIGHT } direction_t;
 
 // Game functions
 void test_draw_tetrominos();
-void play();
+void play(long delay_time);
 
 // Support functions for game
 void setup_border(char *border, int size);

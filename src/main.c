@@ -1,19 +1,15 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 #include <game.h>
 #include <key.h>
 
 int main(int argc, char **args) {
-    //printf("Hello, world!\n");
-    //test_draw_tetrominos();
-
-    /*set_conio_terminal_mode();
-
-    while(!keyboard_hit()) {
-        printf("NO KEYBOARD!!\r\n");
-    }
-
-    printf("Key pressed: %d.\n", get_char());*/
+    // Get delay time from command line
+    char *delay_str;
+    long delay_time = DEFAULT_DELAY;
+    if(argc > 1)
+        delay_time = strtol(args[1], &delay_str, 10);
 
     while(1) {
         printf("\033[2J");
@@ -23,7 +19,13 @@ int main(int argc, char **args) {
         printf(" - q/e -> rotate left/right\n");
         printf(" - s   -> drop piece quickly\n");
         printf(" - backspace -> quit game\n");
-        printf("\nPress enter to begin...\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+        printf("\nWhen starting the app, you can give a\n");
+        printf("different delay time (in microseconds)\n");
+        printf("to adjust for flicker\n");
+        printf("\nDefault delay = %d\n", DEFAULT_DELAY);
+        printf("Current delay = %ld\n", delay_time);
+        printf("Recommended to keep new delay w/in a power of 10\n");
+        printf("\nPress enter to begin...\n\n\n\n\n\n\n");
 
         set_conio_terminal_mode();
 
@@ -36,7 +38,7 @@ int main(int argc, char **args) {
                 goto quit;
         }
 
-        play();
+        play(delay_time);
         reset_terminal_mode();
     }
 

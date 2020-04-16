@@ -15,9 +15,10 @@ canvas_t    g_canvas;
 float       g_fall_spd;
 int         g_fall_key_delay;
 int         g_score = 0;
+long        g_delay;
 
 // Start a new game
-void play() {
+void play(long delay_time) {
     srand(time(0));
     g_current_shape = select_shape();
 
@@ -39,6 +40,7 @@ void play() {
     g_fall_spd = INITIAL_FALL;
     g_fall_key_delay = FALL_KEY_DELAY;
     g_score = 0;
+    g_delay = delay_time;
 
     while(!g_quit) {
         clear_piece = m_get_tetromino_clear_image(g_current_shape);
@@ -55,7 +57,7 @@ void play() {
 
         free(clear_piece);
         free(image_data);
-        usleep(DELAY);
+        usleep(g_delay);
     }
 
     // Draw game over
@@ -110,7 +112,7 @@ void update_piece() {
     }
 
     if(can_move(DOWN))
-        g_current_shape.y += g_fall_spd;
+        g_current_shape.y += g_fall_spd * ((double) g_delay / ((double) DEFAULT_DELAY));
     else if(g_fall_key_delay > 0) {
         g_fall_key_delay--;
     } else if(g_current_shape.y <= 3)
@@ -122,7 +124,7 @@ void update_piece() {
         draw_image_to_canvas(&g_canvas, SHAPE_WIDTH * (g_current_shape.x - 2), ((int) g_current_shape.y) - 2, SHAPE_WIDTH * 5, 5, image_data);
         free(image_data);
 
-        g_score += 10 + (g_fall_spd * 50);
+        g_score += 10 + (g_fall_spd * 50 * ((double) g_delay / ((double) DEFAULT_DELAY)));
 
         check_rows();
 
