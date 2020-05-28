@@ -14,7 +14,7 @@ typedef struct {
     int coords[4][2];
 } tetromino_t;
 
-const int g_shape_coords[7][4][2];
+extern const int g_shape_coords[7][4][2];
 
 char *m_get_tetromino_image(tetromino_t tetromino);
 char *m_get_tetromino_clear_image(tetromino_t tetromino);
