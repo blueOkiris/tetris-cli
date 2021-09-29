@@ -1,0 +1,9 @@
+[package]
+name = "tetris-cli"
+version = "0.1.0"
+edition = "2018"
+
+[dependencies]
+termion = "1.5.6"
+log = "0.4"
+log4rs = "1"
