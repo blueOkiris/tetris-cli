@@ -4,46 +4,41 @@
  */
 
 mod settings;
+mod io;
 
-use termion::raw::{ IntoRawMode, RawTerminal };
-use termion::input::TermRead;
 use termion::event::Key;
-use termion::{ clear, cursor };
-
-use std::io::{ stdin, stdout, Write, Stdout };
-use std::sync::mpsc::channel;
-use std::thread;
 use std::time::{ Instant, Duration };
-
-use log::info;
-use log4rs;
+use std::thread;
 
 enum Room {
     Menu
 }
 
-fn draw_bg_and_walls(output : &mut RawTerminal<Stdout>) {
-    write!(output, "{}{}", cursor::Goto(1, 1), settings::TITLE_STR).unwrap();
-}
-
-fn clear_screen(output : &mut RawTerminal<Stdout>) {
-    write!(output, "{}", clear::All);
+fn draw_walls(disp : &mut io::Display) {
+    let mut wall_str = String::new();
+    for _y in 0..settings::SCREEN_HEIGHT - 1 {
+        wall_str += "█";
+        for _x in 1..settings::SCREEN_WIDTH - 1 {
+            wall_str += " ";
+        }
+        wall_str += "█\r\n";
+    }
+    for _x in 0..settings::SCREEN_WIDTH {
+        wall_str += "█";
+    }
+    wall_str += "\r\n";
+    
+    disp.set_fg(termion::color::Blue);
+    disp.goto(1, 1);
+    disp.write(wall_str.as_str());
 }
 
 fn main() {
-    log4rs::init_file(settings::LOG_CONFIG_FILE, Default::default()).unwrap();
-    info!("Started logging tetris-cli!");
+    io::init_logging(settings::LOG_CONFIG_FILE);
 
     // Set up io
-    let input = stdin();
-    let mut output = stdout().into_raw_mode().unwrap();
-    let (tx, rx) = channel();
-    thread::spawn(move || {
-        // Read from keyboard
-        for c in input.keys() {
-            tx.send(c).unwrap(); // Send down channel
-        }
-    });
+    let mut disp = io::Display::new();
+    let inp = io::Input::new();
     
     // Main loop
     let room = Room::Menu;
@@ -53,18 +48,22 @@ fn main() {
         let start = Instant::now();
 
         // Handle inputs as they come:
-        for c in rx.try_iter() {
-            match c.unwrap() {
+        for key in inp.read_available() {
+            match key {
                 Key::Backspace => quit = true,
                 _ => {}
             }
         }
 
         // Update screen
-        clear_screen(&mut output);
-        draw_bg_and_walls(&mut output);
+        disp.clear();
+        disp.goto(1, 1);
+        draw_walls(&mut disp);
+
+        // Draw and update based on state
         match room {
             Room::Menu => {
+                
             }
         }
 
