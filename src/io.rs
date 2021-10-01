@@ -41,19 +41,19 @@ impl Display {
     }
 
     pub fn goto(&mut self, x : u16, y : u16) {
-        write!(&mut self.output, "{}", cursor::Goto(x, y)).unwrap();
+        writeln!(&mut self.output, "{}", cursor::Goto(x, y)).unwrap();
     }
     
     pub fn set_fg<C : color::Color>(&mut self, fg : C) {
-        write!(&mut self.output, "{}", color::Fg(fg)).unwrap();
+        writeln!(&mut self.output, "{}", color::Fg(fg)).unwrap();
     }
     
     pub fn set_bg<C : color::Color>(&mut self, bg : C) {
-        write!(&mut self.output, "{}", color::Bg(bg)).unwrap();
+        writeln!(&mut self.output, "{}", color::Bg(bg)).unwrap();
     }
 
     pub fn write(&mut self, msg : &str) {
-        write!(&mut self.output, "{}", msg).unwrap();
+        writeln!(&mut self.output, "{}", msg).unwrap();
     }
 }
 
