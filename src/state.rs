@@ -8,7 +8,7 @@ use crate::game::GameData;
 
 use termion::event::Key;
 
-type DrawFn = fn(disp : &mut Display);
+type DrawFn = fn(data : &mut GameData, disp : &mut Display);
 type UpdateFn = fn(data : &mut GameData, keys : Vec<Key>);
 
 #[derive(Clone, Copy)]

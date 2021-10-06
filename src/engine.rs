@@ -27,7 +27,7 @@ pub fn run(
         match state_map.get(&data.room) {
             None => { },
             Some(state) => {
-                (state.draw)(disp);
+                (state.draw)(data, disp);
                 (state.update)(data, inp.read_available());
             }
         }

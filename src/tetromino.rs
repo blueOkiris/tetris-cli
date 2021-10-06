@@ -6,6 +6,7 @@
 #[derive(Clone, Copy, PartialEq, Eq, Hash)]
 pub enum ShapeType { T, L, MirrorL, S, Z, Square, Line }
 
+#[derive(Clone, Copy)]
 pub struct Tetromino {
     pub x : f32,
     pub y : f32,

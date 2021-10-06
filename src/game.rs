@@ -14,7 +14,7 @@ use std::collections::HashMap;
 
 #[derive(Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Room {
-    Menu, Game
+    Menu, Game, GameOver
 }
 
 pub struct GameData {
@@ -23,6 +23,7 @@ pub struct GameData {
     fall_spd : f32,
     placement_ctr : u8,
     score : u32,
+    last_shape : tetromino::Tetromino,
     cur_shape : tetromino::Tetromino
 }
 
@@ -34,6 +35,7 @@ impl GameData {
             fall_spd : INITIAL_FALL,
             placement_ctr : PLACEMENT_DELAY,
             score : 0,
+            last_shape : select_shape(),
             cur_shape : select_shape()
         };
     }
@@ -44,9 +46,9 @@ pub const FALL_INC : f32 = 0.001;
 pub const PLACEMENT_DELAY : u8 = 50;
 pub const SHAPE_DEF : (f32, f32) = (5.0, 3.0);
 
-pub const GAME_STATES : [(Room, state::State); 2] = [
+pub const GAME_STATES : [(Room, state::State); 3] = [
     (Room::Menu, state::State {
-        draw : |disp : &mut io::Display| {
+        draw : |data : &mut GameData, disp : &mut io::Display| {
             // Draw title and play info
             let mut line = 5;
             for msg in settings::MENU_STRS {
@@ -68,6 +70,7 @@ pub const GAME_STATES : [(Room, state::State); 2] = [
                         // Start new game
                         data.quit = false;
                         data.cur_shape = select_shape();
+                        data.last_shape = data.cur_shape;
                         data.fall_spd = INITIAL_FALL;
                         data.placement_ctr = PLACEMENT_DELAY;
                         data.score = 0;
@@ -78,8 +81,18 @@ pub const GAME_STATES : [(Room, state::State); 2] = [
             }
         }
     }), (Room::Game, state::State {
-        draw : |disp : &mut io::Display| {
-            
+        draw : |data : &mut GameData, disp : &mut io::Display| {
+            if data.score != 0 {
+                // Clear old image
+
+            }
+
+            // Draw new image
+
+
+            // Draw score
+
+
         }, update : |data : &mut GameData, keys : Vec<Key>| {
             // Move
             for key in keys {
@@ -106,6 +119,19 @@ pub const GAME_STATES : [(Room, state::State); 2] = [
 
             // Fall
 
+        }
+    }), (Room::GameOver, state::State {
+        draw : |data : &mut GameData, disp : &mut io::Display| {
+
+        }, update : |data : &mut GameData, keys : Vec<Key>| {
+            // Move
+            for key in keys {
+                match key {
+                    Key::Backspace => data.quit = true,
+                    Key::Char('\n') => data.room = Room::Menu,
+                    _ => {}
+                }
+            }
         }
     })
 ];
