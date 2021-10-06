@@ -5,7 +5,18 @@
 
 pub const LOG_CONFIG_FILE : &'static str = "logging_config.yaml";
 
-pub const TITLE_STR : &'static str = "Tetris CLI";
+pub const MENU_STRS : [&'static str; 10] = [
+    "Tetris CLI",
+    "",
+    "",
+    "a/d - move",
+    "q/e - rotate",
+    "s - drop",
+    "backspace - quit",
+    "",
+    "",
+    "Enter to start!"
+];
 
 pub const SHAPE_WIDTH : isize = 2;
 pub const SCREEN_WIDTH : u16 = 10 * (SHAPE_WIDTH as u16) + 2;

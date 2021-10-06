@@ -34,6 +34,22 @@ fn draw_walls(disp : &mut io::Display) {
     disp.write(wall_str.as_str());
 }
 
+fn menu_state_draw(disp : &mut io::Display) {
+    // Draw title and play info
+    let mut line = 5;
+    for msg in settings::MENU_STRS {
+        // Get horizontal position
+        let msg_str_len = msg.len() as u16;
+        let msg_str_pos = settings::SCREEN_WIDTH / 2 - msg_str_len / 2;
+        
+        // Print it out
+        disp.goto(msg_str_pos + 1, line);
+        disp.write(msg);
+
+        line += 1;
+    }
+}
+
 fn main() {
     io::init_logging(settings::LOG_CONFIG_FILE);
 
@@ -65,19 +81,11 @@ fn main() {
         
         // Draw and update based on state
         match room {
-            Room::Menu => {
-                // Draw title
-                let title_str = String::from(settings::TITLE_STR);
-                let title_str_len = title_str.len() as u16;
-                let title_str_pos =
-                    settings::SCREEN_WIDTH / 2
-                        - title_str_len / 2;
-                disp.goto(title_str_pos + 1, 4);
-                disp.write(settings::TITLE_STR);
-            }
+            Room::Menu => menu_state_draw(&mut disp)
         }
         
-        disp.goto(1, settings::SCREEN_HEIGHT);
+        // Position cursor off screen
+        disp.goto(settings::SCREEN_WIDTH + 1, settings::SCREEN_HEIGHT);
 
         // Delay if needed
         let elapsed = start.elapsed().subsec_nanos();
