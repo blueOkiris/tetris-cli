@@ -7,12 +7,12 @@
 pub enum ShapeType { T, L, MirrorL, S, Z, Square, Line }
 
 pub struct Tetromino {
-    x : f32,
-    y : f32,
+    pub x : f32,
+    pub y : f32,
 
-    shape : ShapeType,
+    pub shape : ShapeType,
     
-    coords : [[i8; 2]; 4]
+    pub coords : [[i8; 2]; 4]
 }
 
 impl Tetromino {
@@ -29,7 +29,7 @@ impl Tetromino {
     }
 }
 
-const BASE_SHAPE_COORDS : [(ShapeType, [[i8; 2]; 4]); 7] = [
+pub const BASE_SHAPE_COORDS : [(ShapeType, [[i8; 2]; 4]); 7] = [
     (ShapeType::T,          [ [ -1,  0 ], [  0,  0 ], [  1,  0 ], [  0,  1 ] ]),
     (ShapeType::L,          [ [ -1, -1 ], [  0, -1 ], [  0,  0 ], [  0,  1 ] ]),
     (ShapeType::MirrorL,    [ [  1, -1 ], [  0, -1 ], [  0,  0 ], [  0,  1 ] ]),
