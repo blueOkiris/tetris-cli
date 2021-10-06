@@ -11,7 +11,7 @@ use termion::event::Key;
 
 #[derive(Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Room {
-    Menu
+    Menu, Game
 }
 
 pub struct GameData {
@@ -28,7 +28,7 @@ impl GameData {
     }
 }
 
-pub const GAME_STATES : [(Room, state::State); 1] = [
+pub const GAME_STATES : [(Room, state::State); 2] = [
     (Room::Menu, state::State {
         draw : |disp : &mut io::Display| {
             // Draw title and play info
@@ -51,10 +51,41 @@ pub const GAME_STATES : [(Room, state::State); 1] = [
                     Key::Char('\n') => {
                         // Start new game
                         
+                        data.room = Room::Game;
                     }
                     _ => {}
                 }
             }
+        }
+    }), (Room::Game, state::State {
+        draw : |disp : &mut io::Display| {
+            
+        }, update : |data : &mut GameData, keys : Vec<Key>| {
+            // Move
+            for key in keys {
+                match key {
+                    Key::Backspace => data.quit = true,
+                    Key::Char('a') => {
+                        // Move left
+                        
+                    }, Key::Char('d') => {
+                        // Move right
+                        
+                    }, Key::Char('q') => {
+                        // Rotate ccw
+                        
+                    }, Key::Char('e') => {
+                        // Rotate cw
+                        
+                    }, Key::Char('s') => {
+                        // Drop
+                        
+                    }, _ => {}
+                }
+            }
+
+            // Fall
+
         }
     })
 ];
