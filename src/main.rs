@@ -8,6 +8,7 @@ mod io;
 mod state;
 mod game;
 mod engine;
+mod tetromino;
 
 fn main() {
     io::init_logging(settings::LOG_CONFIG_FILE);

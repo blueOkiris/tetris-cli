@@ -5,11 +5,13 @@
 
 use crate::io;
 use crate::game;
+use crate::state;
 use crate::settings;
 
 use termion::color;
 use std::time::{ Instant, Duration };
 use std::thread;
+use std::collections::HashMap;
 
 pub fn run(
         inp : io::Input, disp : &mut io::Display, data : &mut game::GameData) {
@@ -20,10 +22,13 @@ pub fn run(
         reset_screen(disp);
         
         // Draw and update based on state
-        match data.room {
-            game::Room::Menu => {
-                (game::MENU_STATE.draw)(disp);
-                (game::MENU_STATE.update)(data, inp.read_available());
+        let state_map : HashMap<game::Room, state::State> =
+            game::GAME_STATES.iter().cloned().collect();
+        match state_map.get(&data.room) {
+            None => { },
+            Some(state) => {
+                (state.draw)(disp);
+                (state.update)(data, inp.read_available());
             }
         }
         

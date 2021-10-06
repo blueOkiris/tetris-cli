@@ -9,6 +9,7 @@ use crate::settings;
 
 use termion::event::Key;
 
+#[derive(Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Room {
     Menu
 }
@@ -27,27 +28,33 @@ impl GameData {
     }
 }
 
-pub const MENU_STATE : state::State = state::State {
-    draw : |disp : &mut io::Display| {
-        // Draw title and play info
-        let mut line = 5;
-        for msg in settings::MENU_STRS {
-            // Get horizontal position
-            let msg_str_len = msg.len() as u16;
-            let msg_str_pos = settings::SCREEN_WIDTH / 2 - msg_str_len / 2;
-            
-            // Print it out
-            disp.goto(msg_str_pos + 1, line);
-            disp.write(msg);
-    
-            line += 1;
-        }
-    }, update : |data : &mut GameData, keys : Vec<Key>| {
-        for key in keys {
-            match key {
-                Key::Backspace => data.quit = true,
-                _ => {}
+pub const GAME_STATES : [(Room, state::State); 1] = [
+    (Room::Menu, state::State {
+        draw : |disp : &mut io::Display| {
+            // Draw title and play info
+            let mut line = 5;
+            for msg in settings::MENU_STRS {
+                // Get horizontal position
+                let msg_str_len = msg.len() as u16;
+                let msg_str_pos = settings::SCREEN_WIDTH / 2 - msg_str_len / 2;
+                
+                // Print it out
+                disp.goto(msg_str_pos + 1, line);
+                disp.write(msg);
+        
+                line += 1;
+            }
+        }, update : |data : &mut GameData, keys : Vec<Key>| {
+            for key in keys {
+                match key {
+                    Key::Backspace => data.quit = true,
+                    Key::Char('\n') => {
+                        // Start new game
+                        
+                    }
+                    _ => {}
+                }
             }
         }
-    }
-};
+    })
+];
