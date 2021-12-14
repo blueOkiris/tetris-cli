@@ -16,8 +16,7 @@ use crate::io::{ DISP_WIDTH, DISP_HEIGHT, Canvas, KeyReader };
 use crate::game::play_game;
 
 const LOG_FILE: &'static str = "logging_config.yaml";
-const MENU_COLOR: &dyn Color = &White;
-const MENU_STR: [&'static str; DISP_HEIGHT as usize] = [
+const MENU: [&'static str; DISP_HEIGHT as usize] = [
     "╔══════════════════════════════════════╗",
     "║                                      ║",
     "║                                      ║",
@@ -42,6 +41,7 @@ const MENU_STR: [&'static str; DISP_HEIGHT as usize] = [
     "║                                      ║",
     "╚══════════════════════════════════════╝"
 ];
+const MENU_COLOR: &dyn Color = &White;
 
 fn main() {
     init_file(LOG_FILE, Default::default()).unwrap();
@@ -62,7 +62,7 @@ fn main() {
 
     // Show the menu and controls before launching the game
     loop {
-        cnv.draw(&MENU_STR.to_vec(), (1, 1), &MENU_COLOR, &Reset);
+        cnv.draw(&MENU.to_vec(), (1, 1), &MENU_COLOR, &Reset);
         cnv.flush();
 
         let key = inp.get_key();

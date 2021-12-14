@@ -9,9 +9,7 @@ use termion::{
     color::{ Color, Fg, Bg, Reset },
     async_stdin, AsyncReader
 };
-use std::{
-    io::{ Write, stdout, Stdout, Read }
-};
+use std::io::{ Write, stdout, Stdout, Read };
 
 // Double block shapes in a 10x20 grid plus borders and extra enter space
 pub const SHAPE_STR: &'static str = "██";
