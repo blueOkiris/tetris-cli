@@ -13,8 +13,8 @@ use crate::io::{ Canvas, KeyReader, DISP_HEIGHT };
 const FPS: u64 = 60;
 const BORDER: [&'static str; DISP_HEIGHT as usize] = [
     "╔══════════════════════════════════════╗",
-    "║                                      ║",
-    "║                                      ║",
+    "║   Your Score:                        ║",
+    "║   High Score:                        ║",
     "║                                      ║",
     "║                                      ║",
     "║                                      ║",
@@ -37,8 +37,12 @@ const BORDER: [&'static str; DISP_HEIGHT as usize] = [
     "╚══════════════════════════════════════╝"
 ];
 const BORDER_COLOR: &dyn Color = &White;
+const SCORE_COLOR: &dyn Color = &White;
 
-pub fn play_game(cnv: &mut Canvas, inp: &mut KeyReader) {
+pub fn play_game(
+        cnv: &mut Canvas, inp: &mut KeyReader, hs_disp: &Vec<&String>) -> u64 {
+    let mut score: u64 = 0;
+    
     let mut last_time = Instant::now();
     let interval_ms = 1_000 / FPS;
     loop {
@@ -60,10 +64,17 @@ pub fn play_game(cnv: &mut Canvas, inp: &mut KeyReader) {
         }
 
         // TODO: update game state
+        score = 0;
 
         // Draw
-        cnv.draw(&BORDER.to_vec(), (1, 1), BORDER_COLOR, &Reset);
+        let score_str = format!("{:020}", score);
+        let score_disp = vec![ &score_str ];
+        cnv.draw_strs(&BORDER.to_vec(), (1, 1), BORDER_COLOR, &Reset);
+        cnv.draw_strings(&hs_disp, (17, 3), SCORE_COLOR, &Reset);
+        cnv.draw_strings(&score_disp, (17, 2), SCORE_COLOR, &Reset);
         // TODO: Draw blocks and stuff
         cnv.flush();
     }
+
+    score
 }

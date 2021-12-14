@@ -32,8 +32,23 @@ impl Canvas {
         Self { out }
     }
 
-    pub fn draw(
+    // Can't figure out how to combine the two due to &'static part of str
+    pub fn draw_strs(
             &mut self, lines: &Vec<&'static str>, pos: (u16, u16),
+            fg: &dyn Color, bg: &dyn Color) {
+        let (x, mut y) = pos;
+        for line in lines {
+            write!(
+                self.out, "{}{}{}{}{}{}",
+                Goto(x, y), Fg(fg), Bg(bg), line,
+                Fg(Reset), Bg(Reset)
+            ).unwrap();
+            y += 1;
+        }
+    }
+
+    pub fn draw_strings(
+            &mut self, lines: &Vec<&String>, pos: (u16, u16),
             fg: &dyn Color, bg: &dyn Color) {
         let (x, mut y) = pos;
         for line in lines {
