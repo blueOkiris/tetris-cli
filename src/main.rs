@@ -6,6 +6,7 @@
 mod io;
 mod game;
 mod highscore;
+mod tetromino;
 
 use log4rs::init_file;
 use log::info;

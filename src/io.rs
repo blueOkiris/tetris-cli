@@ -13,8 +13,10 @@ use std::io::{ Write, stdout, Stdout, Read };
 
 // Double block shapes in a 10x20 grid plus borders and extra enter space
 pub const SHAPE_STR: &'static str = "██";
-pub const DISP_WIDTH: u16 = (SHAPE_STR.len() as u16 * 10) + 2; // 10 blks + brdr
-pub const DISP_HEIGHT: u16 = 20 + 3; // 20 blocks, 1 space @ top, border, & NL
+pub const GRID_WIDTH: usize = 10;
+pub const GRID_HEIGHT: usize = 20;
+pub const DISP_WIDTH: u16 = (SHAPE_STR.len() * GRID_WIDTH) as u16 + 2; 
+pub const DISP_HEIGHT: u16 = GRID_HEIGHT as u16 + 3;
 
 // An object that lets you draw to it
 pub struct Canvas {
