@@ -1,84 +1,69 @@
 /*
  * Author: Dylan Turner
- * Description: Functions for manipulation of screen data
+ * Description: Handle key input and drawing
  */
 
-use termion::raw::{ IntoRawMode, RawTerminal };
-use termion::{ clear, cursor, color };
-use termion::input::TermRead;
-use termion::event::Key;
+use termion::{
+    clear::All, cursor::{ Goto, Hide },
+    raw::{ RawTerminal, IntoRawMode },
+    color::{ Color, Fg, Bg, Reset },
+    async_stdin, AsyncReader
+};
+use std::{
+    io::{ Write, stdout, Stdout, Read }
+};
 
-use std::io::{ stdin, stdout, Write, Stdout, Error };
+// Double block shapes in a 10x20 grid plus borders and extra enter space
+pub const SHAPE_STR: &'static str = "██";
+pub const DISP_WIDTH: u16 = (SHAPE_STR.len() as u16 * 10) + 2; // 10 blks + brdr
+pub const DISP_HEIGHT: u16 = 20 + 4; // 20 blocks, 1 space @ top, border, & NL
 
-use std::sync::mpsc::{ channel, Receiver };
-use std::thread;
-
-use log::info;
-use log4rs;
-
-pub fn init_logging(log_file : &str) {
-    log4rs::init_file(log_file, Default::default()).unwrap();
-    info!("Started logging tetris-cli!");
+// An object that lets you draw to it
+pub struct Canvas {
+    out: RawTerminal<Stdout>
 }
 
-pub struct Display {
-    output : RawTerminal<Stdout>
-}
+impl Canvas {
+    pub fn new() -> Self {
+        let mut out = stdout().into_raw_mode().unwrap();
+        write!(out, "{}{}", All, Goto(1, 1)).unwrap();
+        out.flush().unwrap();
 
-impl Display {
-    pub fn new() -> Display {
-        let output = stdout().into_raw_mode().unwrap();
-        return Display { output };
+        write!(out, "{}", Hide).unwrap(); // Hide the cursor
+
+        Self { out }
     }
 
-    pub fn clear(&mut self) {
+    pub fn write(
+            &mut self, txt: &String, pos: (u16, u16),
+            fg: &dyn Color, bg: &dyn Color) {
+        let (x, y) = pos;
         write!(
-            &mut self.output, "{}{}{}", 
-            color::Fg(color::Reset),
-            color::Bg(color::Reset),
-            clear::All
+            self.out, "{}{}{}{}{}{}",
+            Goto(x, y), Fg(fg), Bg(bg), txt,
+            Fg(Reset), Bg(Reset)
         ).unwrap();
     }
 
-    pub fn goto(&mut self, x : u16, y : u16) {
-        writeln!(&mut self.output, "{}", cursor::Goto(x, y)).unwrap();
-    }
-    
-    pub fn set_fg<C : color::Color>(&mut self, fg : C) {
-        writeln!(&mut self.output, "{}", color::Fg(fg)).unwrap();
-    }
-    
-    pub fn set_bg<C : color::Color>(&mut self, bg : C) {
-        writeln!(&mut self.output, "{}", color::Bg(bg)).unwrap();
-    }
-
-    pub fn write(&mut self, msg : &str) {
-        writeln!(&mut self.output, "{}", msg).unwrap();
+    pub fn flush(&mut self) {
+        self.out.flush().unwrap();
     }
 }
 
-pub struct Input {
-    rx : Receiver<Result<Key, Error>>
+// An object that lets you read key presses
+pub struct KeyReader {
+    inp: AsyncReader
 }
 
-impl Input {
-    pub fn new() -> Input {
-        let input = stdin();
-        let (tx, rx) = channel();
-        thread::spawn(move || {
-            // Read from keyboard
-            for key in input.keys() {
-                tx.send(key).unwrap(); // Send down channel
-            }
-        });
-        return Input { rx };
+impl KeyReader {
+    pub fn new() -> Self {
+        let inp = async_stdin();
+        Self { inp }
     }
 
-    pub fn read_available(&self) -> Vec<Key> {
-        let mut keys = Vec::new();
-        for key in self.rx.try_iter() {
-            keys.push(key.unwrap());
-        }
-        return keys;
+    pub fn get_key(&mut self) -> u8 {
+        let mut key_bytes: [u8; 1] = [ 0 ];
+        self.inp.read(&mut key_bytes).unwrap();
+        return  key_bytes[0];
     }
 }
