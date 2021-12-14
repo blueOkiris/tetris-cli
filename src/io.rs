@@ -16,7 +16,7 @@ use std::{
 // Double block shapes in a 10x20 grid plus borders and extra enter space
 pub const SHAPE_STR: &'static str = "██";
 pub const DISP_WIDTH: u16 = (SHAPE_STR.len() as u16 * 10) + 2; // 10 blks + brdr
-pub const DISP_HEIGHT: u16 = 20 + 4; // 20 blocks, 1 space @ top, border, & NL
+pub const DISP_HEIGHT: u16 = 20 + 3; // 20 blocks, 1 space @ top, border, & NL
 
 // An object that lets you draw to it
 pub struct Canvas {
@@ -34,15 +34,18 @@ impl Canvas {
         Self { out }
     }
 
-    pub fn write(
-            &mut self, txt: &String, pos: (u16, u16),
+    pub fn draw(
+            &mut self, lines: &Vec<&'static str>, pos: (u16, u16),
             fg: &dyn Color, bg: &dyn Color) {
-        let (x, y) = pos;
-        write!(
-            self.out, "{}{}{}{}{}{}",
-            Goto(x, y), Fg(fg), Bg(bg), txt,
-            Fg(Reset), Bg(Reset)
-        ).unwrap();
+        let (x, mut y) = pos;
+        for line in lines {
+            write!(
+                self.out, "{}{}{}{}{}{}",
+                Goto(x, y), Fg(fg), Bg(bg), line,
+                Fg(Reset), Bg(Reset)
+            ).unwrap();
+            y += 1;
+        }
     }
 
     pub fn flush(&mut self) {

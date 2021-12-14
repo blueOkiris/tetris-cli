@@ -17,30 +17,31 @@ use crate::game::play_game;
 
 const LOG_FILE: &'static str = "logging_config.yaml";
 const MENU_COLOR: &dyn Color = &White;
-const MENU_STR: &'static str =
-    "╔══════════════════════════════════════╗\n\r\
-     ║                                      ║\n\r\
-     ║                                      ║\n\r\
-     ║                                      ║\n\r\
-     ║                                      ║\n\r\
-     ║  Tetris CLI by Dylan Turner ca 2021  ║\n\r\
-     ║                                      ║\n\r\
-     ║                                      ║\n\r\
-     ║              Controls:               ║\n\r\
-     ║      - a/d -> move left/right        ║\n\r\
-     ║     - q/e -> rotate left/right       ║\n\r\
-     ║          - s -> drop piece           ║\n\r\
-     ║      - backspace -> quit game        ║\n\r\
-     ║                                      ║\n\r\
-     ║                                      ║\n\r\
-     ║        Press enter to begin...       ║\n\r\
-     ║                                      ║\n\r\
-     ║                                      ║\n\r\
-     ║                                      ║\n\r\
-     ║                                      ║\n\r\
-     ║                                      ║\n\r\
-     ║                                      ║\n\r\
-     ╚══════════════════════════════════════╝\n\r";
+const MENU_STR: [&'static str; DISP_HEIGHT as usize] = [
+    "╔══════════════════════════════════════╗",
+    "║                                      ║",
+    "║                                      ║",
+    "║                                      ║",
+    "║                                      ║",
+    "║  Tetris CLI by Dylan Turner ca 2021  ║",
+    "║                                      ║",
+    "║                                      ║",
+    "║              Controls:               ║",
+    "║      - a/d -> move left/right        ║",
+    "║     - q/e -> rotate left/right       ║",
+    "║          - s -> drop piece           ║",
+    "║      - backspace -> quit game        ║",
+    "║                                      ║",
+    "║                                      ║",
+    "║        Press enter to begin...       ║",
+    "║                                      ║",
+    "║                                      ║",
+    "║                                      ║",
+    "║                                      ║",
+    "║                                      ║",
+    "║                                      ║",
+    "╚══════════════════════════════════════╝"
+];
 
 fn main() {
     init_file(LOG_FILE, Default::default()).unwrap();
@@ -61,7 +62,7 @@ fn main() {
 
     // Show the menu and controls before launching the game
     loop {
-        cnv.write(&String::from(MENU_STR), (1, 1), &MENU_COLOR, &Reset);
+        cnv.draw(&MENU_STR.to_vec(), (1, 1), &MENU_COLOR, &Reset);
         cnv.flush();
 
         let key = inp.get_key();
