@@ -10,7 +10,6 @@ use rand::{
 use termion::color::{
     Color, Magenta, Red, Green, Yellow, Blue, Cyan, LightYellow
 };
-use crate::io::SHAPE_STR;
 
 const SHAPE_COORDS: [[(i16, i16); 4]; 7] = [
     [ (-1,  0), (0,  0), ( 1, 0), ( 0, 1) ],
@@ -21,7 +20,7 @@ const SHAPE_COORDS: [[(i16, i16); 4]; 7] = [
     [ ( 0,  0), (1,  0), ( 0, 1), ( 1, 1) ],
     [ ( 0, -1), (0,  0), ( 0, 1), ( 0, 2) ]
 ];
-const SHAPE_COLORS: [&dyn Color; 7] = [
+pub const SHAPE_COLORS: [&dyn Color; 7] = [
     &Magenta, &Yellow, &Blue, &Green, &Red, &LightYellow, &Cyan
 ];
 
@@ -54,7 +53,7 @@ impl<'a> Tetromino<'a> {
     pub fn select() -> Self {
         let shape = random();
         Self {
-            pos: (7.0, 3.0),
+            pos: (7.0, 0.0),
             shape,
             coords: SHAPE_COORDS[shape as usize],
             fg: SHAPE_COLORS[shape as usize]

@@ -9,8 +9,10 @@ use std::{
 };
 use termion::color::{ Color, White, Reset };
 use math::round::floor;
-use crate::io::{ Canvas, KeyReader, DISP_HEIGHT, GRID_WIDTH, GRID_HEIGHT, SHAPE_STR};
-use crate::tetromino::Tetromino;
+use crate::io::{
+    Canvas, KeyReader, DISP_HEIGHT, GRID_WIDTH, GRID_HEIGHT, SHAPE_STR
+};
+use crate::tetromino::{ SHAPE_COLORS, Tetromino };
 
 const FPS: u64 = 60;
 const BORDER: [&'static str; DISP_HEIGHT as usize] = [
@@ -47,7 +49,7 @@ struct GameState<'a> {
     pub score: u64,
     pub curr_shape: Tetromino<'a>,
     pub fall_spd: f32,
-    pub blocks: [[bool; GRID_WIDTH]; GRID_HEIGHT]
+    pub blocks: [[i8; GRID_WIDTH]; GRID_HEIGHT]
 }
 
 impl<'a> GameState<'a> {
@@ -57,67 +59,26 @@ impl<'a> GameState<'a> {
             curr_shape: Tetromino::select(),
             fall_spd: INITIAL_FALL_SPD,
             blocks: [
-                [
-                    false, false, false, false, false,
-                    false, false, false, false, false
-                ], [
-                    false, false, false, false, false,
-                    false, false, false, false, false
-                ], [
-                    false, false, false, false, false,
-                    false, false, false, false, false
-                ], [
-                    false, false, false, false, false,
-                    false, false, false, false, false
-                ], [
-                    false, false, false, false, false,
-                    false, false, false, false, false
-                ], [
-                    false, false, false, false, false,
-                    false, false, false, false, false
-                ], [
-                    false, false, false, false, false,
-                    false, false, false, false, false
-                ], [
-                    false, false, false, false, false,
-                    false, false, false, false, false
-                ], [
-                    false, false, false, false, false,
-                    false, false, false, false, false
-                ], [
-                    false, false, false, false, false,
-                    false, false, false, false, false
-                ], [
-                    false, false, false, false, false,
-                    false, false, false, false, false
-                ], [
-                    false, false, false, false, false,
-                    false, false, false, false, false
-                ], [
-                    false, false, false, false, false,
-                    false, false, false, false, false
-                ], [
-                    false, false, false, false, false,
-                    false, false, false, false, false
-                ], [
-                    false, false, false, false, false,
-                    false, false, false, false, false
-                ], [
-                    false, false, false, false, false,
-                    false, false, false, false, false
-                ], [
-                    false, false, false, false, false,
-                    false, false, false, false, false
-                ], [
-                    false, false, false, false, false,
-                    false, false, false, false, false
-                ], [
-                    false, false, false, false, false,
-                    false, false, false, false, false
-                ], [
-                    false, false, false, false, false,
-                    false, false, false, false, false
-                ]
+                [ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
+                [ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
+                [ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
+                [ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
+                [ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
+                [ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
+                [ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
+                [ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
+                [ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
+                [ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
+                [ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
+                [ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
+                [ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
+                [ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
+                [ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
+                [ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
+                [ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
+                [ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
+                [ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
+                [ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ]
             ]
         }
     }
@@ -159,11 +120,11 @@ pub fn play_game(
         
         for y in 0..GRID_HEIGHT {
             for x in 0..GRID_WIDTH {
-                if state.blocks[y][x] {
+                if state.blocks[y][x] != -1 {
                     cnv.draw_strs(
                         &vec![ SHAPE_STR ],
                         ((x * SHAPE_STR.len() + 1) as u16, (y + 2) as u16),
-                        state.curr_shape.fg, &Reset
+                        SHAPE_COLORS[state.blocks[y][x] as usize], &Reset
                     );
                 }
             }
