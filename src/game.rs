@@ -45,7 +45,8 @@ const BORDER: [&'static str; DISP_HEIGHT as usize] = [
 const BORDER_COLOR: &dyn Color = &White;
 const SCORE_COLOR: &dyn Color = &White;
 const INITIAL_FALL_SPD: f32 = 0.9;
-const FALL_KEY_SPD: f32 = 60.0;
+const FALL_KEY_SPD: f32 = 100.0;
+const LAND_TIME_DELAY_S: f64 = 0.1;
 
 enum Dir { Down, Left, Right }
 
@@ -53,7 +54,8 @@ struct GameState<'a> {
     pub score: u64,
     pub curr_shape: Tetromino<'a>,
     pub fall_spd: f32,
-    pub blocks: [[i8; GRID_WIDTH]; GRID_HEIGHT]
+    pub blocks: [[i8; GRID_WIDTH]; GRID_HEIGHT],
+    pub land_timer: f64
 }
 
 impl<'a> GameState<'a> {
@@ -83,9 +85,15 @@ impl<'a> GameState<'a> {
                 [ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
                 [ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ],
                 [ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 ]
-            ]
+            ], land_timer: LAND_TIME_DELAY_S
         }
     }
+}
+
+enum UpdateEndState {
+    Quit,
+    Lost,
+    Continue
 }
 
 // Main game loop function
@@ -106,8 +114,13 @@ pub fn play_game(
         }
         last_time = now;
 
-        if !update(inp, &mut state, delta_time_ms) {
-            break;
+        match update(inp, &mut state, delta_time_ms) {
+            UpdateEndState::Continue => {},
+            UpdateEndState::Quit => {
+                return 0;
+            }, UpdateEndState::Lost => {
+                break;
+            }
         }
         draw(cnv, hs_disp, &mut state);
     }
@@ -117,10 +130,10 @@ pub fn play_game(
 
 fn update(
         inp: &mut KeyReader, state: &mut GameState,
-        delta_time_ms: u64) -> bool {
+        delta_time_ms: u64) -> UpdateEndState {
     let key = inp.get_key();
     match key {
-        127 => return false, // Backspace -> back to menu
+        127 => return UpdateEndState::Quit, // Backspace -> back to menu
         b'a' => {
             if can_move(state, Dir::Left) {
                 let (x, y) = state.curr_shape.pos;
@@ -149,9 +162,21 @@ fn update(
             shape_x,
             shape_y + state.fall_spd * (delta_time_ms as f32 / 1_000.0)
         );
+    } else if state.land_timer > 0.0 { // Allow a few ms for moving b4 settling
+        state.land_timer -= delta_time_ms as f64 / 1_0000.0;
+    } else if state.curr_shape.pos.0 <= 1.0 { // Landed at start means death
+        return UpdateEndState::Lost;
+    } else {
+        state.score += 10 + (state.fall_spd * 50.0) as u64;
+
+        // TODO: Store blocks
+        // TODO: Delete completed rows, score, and increase fall speed
+
+        state.land_timer = LAND_TIME_DELAY_S;
+        state.curr_shape = Tetromino::select();
     }
 
-    true
+    UpdateEndState::Continue
 }
 
 fn draw(cnv: &mut Canvas, hs_disp: &Vec<&String>, state: &mut GameState) {
