@@ -87,4 +87,6 @@ fn main() {
             _ => {}
         }
     }
+
+    cnv.reset();
 }

@@ -4,7 +4,7 @@
  */
 
 use termion::{
-    clear::All, cursor::{ Goto, Hide },
+    clear::All, cursor::{ Goto, Hide, Show },
     raw::{ RawTerminal, IntoRawMode },
     color::{ Color, Fg, Bg, Reset },
     async_stdin, AsyncReader
@@ -33,6 +33,11 @@ impl Canvas {
         write!(out, "{}", Hide).unwrap(); // Hide the cursor
 
         Self { out }
+    }
+
+    pub fn reset(&mut self) {
+        write!(self.out, "{}\r\n", Show).unwrap();
+        self.out.flush().unwrap();
     }
 
     // Can't figure out how to combine the two due to &'static part of str
