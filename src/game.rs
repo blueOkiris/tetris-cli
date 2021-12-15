@@ -18,9 +18,9 @@ use crate::tetromino::{ SHAPE_COLORS, Tetromino };
 
 const FPS: u64 = 60;
 const BORDER: [&'static str; DISP_HEIGHT as usize] = [
+    "                      ",
+    "                      ",
     "╔════════════════════╗",
-    "║                    ║",
-    "║                    ║",
     "║                    ║",
     "║                    ║",
     "║                    ║",
@@ -45,8 +45,8 @@ const BORDER: [&'static str; DISP_HEIGHT as usize] = [
 ];
 const BORDER_COLOR: &dyn Color = &White;
 const SCORE_COLOR: &dyn Color = &White;
-const INITIAL_FALL_SPD: f32 = 0.01;
-const FALL_KEY_SPD: f32 = 20.0;
+const INITIAL_FALL_SPD: f32 = 0.4;
+const FALL_KEY_SPD: f32 = 60.0;
 
 enum Dir { Down, Left, Right }
 
@@ -107,7 +107,7 @@ pub fn play_game(
         }
         last_time = now;
 
-        if !update(inp, &mut state) {
+        if !update(inp, &mut state, delta_time_ms) {
             break;
         }
         draw(cnv, hs_disp, &mut state);
@@ -116,7 +116,9 @@ pub fn play_game(
     state.score
 }
 
-fn update(inp: &mut KeyReader, state: &mut GameState) -> bool {
+fn update(
+        inp: &mut KeyReader, state: &mut GameState,
+        delta_time_ms: u64) -> bool {
     let key = inp.get_key();
     match key {
         127 => return false, // Backspace -> back to menu
@@ -130,13 +132,24 @@ fn update(inp: &mut KeyReader, state: &mut GameState) -> bool {
                 let (x, y) = state.curr_shape.pos;
                 state.curr_shape.pos = (x + 1.0, y);
             }
+        }, b's' => {
+            if can_move(state, Dir::Down) {
+                let (shape_x, shape_y) = state.curr_shape.pos;
+                state.curr_shape.pos = (
+                    shape_x,
+                    shape_y + FALL_KEY_SPD * (delta_time_ms as f32 / 1_000.0)
+                );
+            }
         }
         _ => {}
     }
 
     if can_move(state, Dir::Down) {
         let (shape_x, shape_y) = state.curr_shape.pos;
-        state.curr_shape.pos = (shape_x, shape_y + state.fall_spd);
+        state.curr_shape.pos = (
+            shape_x,
+            shape_y + state.fall_spd * (delta_time_ms as f32 / 1_000.0)
+        );
     }
 
     true
@@ -146,8 +159,8 @@ fn draw(cnv: &mut Canvas, hs_disp: &Vec<&String>, state: &mut GameState) {
     let score_str = format!("{:020}", state.score);
     let score_disp = vec![ &score_str ];
     cnv.draw_strs(&BORDER.to_vec(), (1, 1), BORDER_COLOR, &Reset);
-    cnv.draw_strings(&hs_disp, (2, 2), SCORE_COLOR, &Reset);
-    cnv.draw_strings(&score_disp, (2, 3), SCORE_COLOR, &Reset);
+    cnv.draw_strings(&hs_disp, (2, 1), SCORE_COLOR, &Reset);
+    cnv.draw_strings(&score_disp, (2, 2), SCORE_COLOR, &Reset);
     
     for y in 0..GRID_HEIGHT {
         for x in 0..GRID_WIDTH {

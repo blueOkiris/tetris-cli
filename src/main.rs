@@ -20,12 +20,11 @@ use crate::highscore::SaveData;
 
 const LOG_FILE: &'static str = "logging_config.yaml";
 const MENU: [&'static str; DISP_HEIGHT as usize] = [
+    "                      ",
     "╔════════════════════╗",
-    "║                    ║",
-    "║                    ║",
-    "║    Tetris CLI      ║",
-    "║  by Dylan Turner   ║",
-    "║    circa 2021      ║",
+    "║  T E T R I S  CLI  ║",
+    "║ Created by Dylan T ║",
+    "║     circa 2021     ║",
     "║                    ║",
     "║                    ║",
     "║     Controls:      ║",
@@ -43,7 +42,8 @@ const MENU: [&'static str; DISP_HEIGHT as usize] = [
     "║     High Score:    ║",
     "║                    ║",
     "║                    ║",
-    "╚════════════════════╝"
+    "╚════════════════════╝",
+    "                      "
 ];
 const MENU_COLOR: &dyn Color = &White;
 
