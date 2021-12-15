@@ -7,7 +7,6 @@ use std::{
     thread::sleep,
     time::{ Instant, Duration }
 };
-use log::info;
 use termion::color::{ Color, White, Reset };
 use math::round::floor;
 use crate::io::{
@@ -18,8 +17,8 @@ use crate::tetromino::{ SHAPE_COLORS, Tetromino };
 
 const FPS: u64 = 60;
 const BORDER: [&'static str; DISP_HEIGHT as usize] = [
-    "                      ",
-    "                      ",
+    "H:                    ",
+    "S:                    ",
     "╔════════════════════╗",
     "║                    ║",
     "║                    ║",
@@ -45,7 +44,7 @@ const BORDER: [&'static str; DISP_HEIGHT as usize] = [
 ];
 const BORDER_COLOR: &dyn Color = &White;
 const SCORE_COLOR: &dyn Color = &White;
-const INITIAL_FALL_SPD: f32 = 0.4;
+const INITIAL_FALL_SPD: f32 = 0.9;
 const FALL_KEY_SPD: f32 = 60.0;
 
 enum Dir { Down, Left, Right }
@@ -156,11 +155,12 @@ fn update(
 }
 
 fn draw(cnv: &mut Canvas, hs_disp: &Vec<&String>, state: &mut GameState) {
+    cnv.draw_strs(&BORDER.to_vec(), (1, 1), BORDER_COLOR, &Reset);
+
     let score_str = format!("{:020}", state.score);
     let score_disp = vec![ &score_str ];
-    cnv.draw_strs(&BORDER.to_vec(), (1, 1), BORDER_COLOR, &Reset);
-    cnv.draw_strings(&hs_disp, (2, 1), SCORE_COLOR, &Reset);
-    cnv.draw_strings(&score_disp, (2, 2), SCORE_COLOR, &Reset);
+    cnv.draw_strings(&hs_disp, (3, 1), SCORE_COLOR, &Reset);
+    cnv.draw_strings(&score_disp, (3, 2), SCORE_COLOR, &Reset);
     
     for y in 0..GRID_HEIGHT {
         for x in 0..GRID_WIDTH {
