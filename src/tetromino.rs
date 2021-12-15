@@ -11,6 +11,23 @@ use termion::color::{
     Color, Magenta, Red, Green, Yellow, Blue, Cyan, LightYellow
 };
 
+
+/*
+ * Shape could be -2 to 2 in all directions (bc rotations)
+ * so needs to be 3x4 shape
+ *      -2  -1  0   1    2
+ *    _____________________
+ * -2 |   |   |   |   |   |
+ *    _____________________
+ * -1 |   |   |   |   |   |
+ *    ---------------------
+ *  0 |   |   |   |   |   |
+ *    ---------------------
+ *  1 |   |   |   |   |   |
+ *    ---------------------
+ *  2 |   |   |   |   |   |
+ *    ---------------------
+ */
 const SHAPE_COORDS: [[(i16, i16); 4]; 7] = [
     [ (-1,  0), (0,  0), ( 1, 0), ( 0, 1) ],
     [ (-1, -1), (0, -1), ( 0, 0), ( 0, 1) ],
@@ -53,7 +70,7 @@ impl<'a> Tetromino<'a> {
     pub fn select() -> Self {
         let shape = random();
         Self {
-            pos: (7.0, 0.0),
+            pos: (4.0, 0.0),
             shape,
             coords: SHAPE_COORDS[shape as usize],
             fg: SHAPE_COLORS[shape as usize]

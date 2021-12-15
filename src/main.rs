@@ -14,41 +14,43 @@ use termion::{
     color::{ Color, White, Reset },
     terminal_size
 };
-use crate::io::{ DISP_WIDTH, DISP_HEIGHT, Canvas, KeyReader };
+use crate::io::{ DISP_WIDTH, DISP_HEIGHT, Canvas, KeyReader, SHAPE_WIDTH};
 use crate::game::play_game;
 use crate::highscore::SaveData;
 
 const LOG_FILE: &'static str = "logging_config.yaml";
 const MENU: [&'static str; DISP_HEIGHT as usize] = [
-    "╔══════════════════════════════════════╗",
-    "║                                      ║",
-    "║                                      ║",
-    "║                                      ║",
-    "║                                      ║",
-    "║  Tetris CLI by Dylan Turner ca 2021  ║",
-    "║                                      ║",
-    "║                                      ║",
-    "║              Controls:               ║",
-    "║      - a/d -> move left/right        ║",
-    "║     - q/e -> rotate left/right       ║",
-    "║          - s -> drop piece           ║",
-    "║      - backspace -> quit game        ║",
-    "║                                      ║",
-    "║                                      ║",
-    "║        Press enter to begin...       ║",
-    "║                                      ║",
-    "║                                      ║",
-    "║                                      ║",
-    "║   High Score:                        ║",
-    "║                                      ║",
-    "║                                      ║",
-    "╚══════════════════════════════════════╝"
+    "╔════════════════════╗",
+    "║                    ║",
+    "║                    ║",
+    "║    Tetris CLI      ║",
+    "║  by Dylan Turner   ║",
+    "║    circa 2021      ║",
+    "║                    ║",
+    "║                    ║",
+    "║     Controls:      ║",
+    "║ - a/d - left/right ║",
+    "║   - q/e - rotate   ║",
+    "║ - s -> drop piece  ║",
+    "║   - back -> quit   ║",
+    "║                    ║",
+    "║                    ║",
+    "║                    ║",
+    "║  Enter to begin... ║",
+    "║                    ║",
+    "║                    ║",
+    "║                    ║",
+    "║     High Score:    ║",
+    "║                    ║",
+    "║                    ║",
+    "╚════════════════════╝"
 ];
 const MENU_COLOR: &dyn Color = &White;
 
 fn main() {
     init_file(LOG_FILE, Default::default()).unwrap();
     info!("Started new game!");
+    info!("{}", SHAPE_WIDTH);
 
     // Load high score from config file
     let save = SaveData::load_config();
@@ -73,7 +75,7 @@ fn main() {
         let hs_disp = vec![ &hs_str ];
 
         cnv.draw_strs(&MENU.to_vec(), (1, 1), &MENU_COLOR, &Reset);
-        cnv.draw_strings(&hs_disp, (17, 20), &MENU_COLOR, &Reset);
+        cnv.draw_strings(&hs_disp, (2, 22), &MENU_COLOR, &Reset);
         cnv.flush();
 
         let key = inp.get_key();
