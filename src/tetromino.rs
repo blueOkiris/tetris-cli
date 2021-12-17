@@ -41,7 +41,7 @@ pub const SHAPE_COLORS: [&dyn Color; 7] = [
     &Magenta, &Yellow, &Blue, &Green, &Red, &LightYellow, &Cyan
 ];
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, PartialEq)]
 pub enum ShapeType { T, L, Mirror, S, Z, Square, Line }
 
 impl Distribution<ShapeType> for Standard {
@@ -74,6 +74,21 @@ impl<'a> Tetromino<'a> {
             shape,
             coords: SHAPE_COORDS[shape as usize],
             fg: SHAPE_COLORS[shape as usize]
+        }
+    }
+
+    pub fn rotate(&mut self, is_left: bool) {
+        if self.shape == ShapeType::Square {
+            return;
+        }
+
+        for i in 0..4 {
+            let (x, y) = self.coords[i];
+            if is_left {
+                self.coords[i] = (y, -x);
+            } else {
+                self.coords[i] = (-y, x);
+            }
         }
     }
 }

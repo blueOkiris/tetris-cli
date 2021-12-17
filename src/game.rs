@@ -7,6 +7,7 @@ use std::{
     thread::sleep,
     time::{ Instant, Duration }
 };
+use log::info;
 use termion::color::{ Color, White, Reset };
 use math::round::floor;
 use crate::io::{
@@ -44,8 +45,8 @@ const BORDER: [&'static str; DISP_HEIGHT as usize] = [
 ];
 const BORDER_COLOR: &dyn Color = &White;
 const SCORE_COLOR: &dyn Color = &White;
+const SHAPE_DRAW_OFFSET: i16 = 5;
 const INITIAL_FALL_SPD: f32 = 0.9;
-const FALL_KEY_SPD: f32 = 100.0;
 const LAND_TIME_DELAY_S: f64 = 0.1;
 
 enum Dir { Down, Left, Right }
@@ -136,35 +137,32 @@ fn update(
         127 => return UpdateEndState::Quit, // Backspace -> back to menu
         b'a' => {
             if can_move(state, Dir::Left) {
-                let (x, y) = state.curr_shape.pos;
-                state.curr_shape.pos = (x - 1.0, y);
+                state.curr_shape.pos.0 -= 1.0;
             }
         }, b'd' => {
             if can_move(state, Dir::Right) {
-                let (x, y) = state.curr_shape.pos;
-                state.curr_shape.pos = (x + 1.0, y);
+                state.curr_shape.pos.0 += 1.0;
             }
+        }, b'q' => {
+            state.curr_shape.rotate(true);
+        }, b'e' => {
+            state.curr_shape.rotate(false);
         }, b's' => {
-            if can_move(state, Dir::Down) {
-                let (shape_x, shape_y) = state.curr_shape.pos;
-                state.curr_shape.pos = (
-                    shape_x,
-                    shape_y + FALL_KEY_SPD * (delta_time_ms as f32 / 1_000.0)
-                );
+            state.curr_shape.pos.1 =
+                floor(state.curr_shape.pos.1 as f64, 0) as f32;
+            while can_move(state, Dir::Down) {
+                state.curr_shape.pos.1 += 1.0;
             }
         }
         _ => {}
     }
 
     if can_move(state, Dir::Down) {
-        let (shape_x, shape_y) = state.curr_shape.pos;
-        state.curr_shape.pos = (
-            shape_x,
-            shape_y + state.fall_spd * (delta_time_ms as f32 / 1_000.0)
-        );
+        state.curr_shape.pos.1 +=
+            state.fall_spd * (delta_time_ms as f32 / 1_000.0);
     } else if state.land_timer > 0.0 { // Allow a few ms for moving b4 settling
         state.land_timer -= delta_time_ms as f64 / 1_0000.0;
-    } else if state.curr_shape.pos.0 <= 1.0 { // Landed at start means death
+    } else if state.curr_shape.pos.1 <= 1.0 { // Landed at start means death
         return UpdateEndState::Lost;
     } else {
         state.score += 10 + (state.fall_spd * 50.0) as u64;
@@ -201,13 +199,15 @@ fn draw(cnv: &mut Canvas, hs_disp: &Vec<&String>, state: &mut GameState) {
 
     // Dealing with whole display! Not just grid
     let (shape_x, shape_y) = state.curr_shape.pos;
+    let shape_block_x = floor(shape_x as f64, 0) as i16;
+    let shape_block_y = floor(shape_y as f64, 0) as i16;
     for coord in state.curr_shape.coords {
-        let (block_x, block_y) = coord;
-        
-        let x =
-            (SHAPE_WIDTH as i16)
-                * (block_x + floor(shape_x as f64, 0) as i16) + 2;
-        let y = block_y + floor(shape_y as f64, 0) as i16 + 2 + 3;
+        let (mut coord_x, mut coord_y) = coord;
+        coord_x += shape_block_x;
+        coord_y += shape_block_y;
+
+        let x = coord_x * 2 + 1;
+        let y = coord_y + SHAPE_DRAW_OFFSET;
 
         cnv.draw_strs(
             &vec![ SHAPE_STR ], (x as u16, y as u16),
@@ -218,7 +218,7 @@ fn draw(cnv: &mut Canvas, hs_disp: &Vec<&String>, state: &mut GameState) {
     cnv.flush();
 }
 
-fn can_move(state: &GameState, dir: Dir) -> bool {
+fn can_move(state: &mut GameState, dir: Dir) -> bool {
     let (shape_x, shape_y) = state.curr_shape.pos;
     let shape_block_x = floor(shape_x as f64, 0) as i16;
     let shape_block_y = floor(shape_y as f64, 0) as i16;
@@ -241,6 +241,7 @@ fn can_move(state: &GameState, dir: Dir) -> bool {
         // Deal with just grid! Not whole display
         if coord_x < 0 || coord_x >= GRID_WIDTH as i16
                 || coord_y >= GRID_HEIGHT as i16 - 1 {
+            info!("Coord: ({}, {})", coord_x, coord_y);
             return false;
         }
 
