@@ -8,6 +8,8 @@ Tiny tetris game in a terminal
 
 (Linux only!)
 
+Available for Arch on the AUR as [tetris-cli-git](https://aur.archlinux.org/packages/tetris-terminal-git)
+
 ## Controls
 
  + a -> Move left
