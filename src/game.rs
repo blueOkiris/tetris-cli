@@ -104,8 +104,7 @@ enum UpdateEndState {
 }
 
 // Main game loop function
-pub fn play_game(
-        cnv: &mut Canvas, inp: &mut KeyReader, hs_disp: &Vec<&String>) -> u64 {
+pub fn play_game(cnv: &mut Canvas, inp: &mut KeyReader, hs_disp: &Vec<&String>) -> u64 {
     let mut state = GameState::new();
 
     let mut last_time = Instant::now();
@@ -113,8 +112,7 @@ pub fn play_game(
     loop {
         // Keep stable fps
         let now = Instant::now();
-        let delta_time_ms =
-            (now.duration_since(last_time).subsec_nanos() / 1_000_000) as u64;
+        let delta_time_ms = (now.duration_since(last_time).subsec_nanos() / 1_000_000) as u64;
         if delta_time_ms < interval_ms {
             sleep(Duration::from_millis(interval_ms - delta_time_ms));
             continue;
@@ -135,9 +133,7 @@ pub fn play_game(
     state.score
 }
 
-fn update(
-        inp: &mut KeyReader, state: &mut GameState,
-        delta_time_ms: u64) -> UpdateEndState {
+fn update(inp: &mut KeyReader, state: &mut GameState, delta_time_ms: u64) -> UpdateEndState {
     let key = inp.get_key();
     match key {
         127 => return UpdateEndState::Quit, // Backspace -> back to menu
@@ -154,8 +150,7 @@ fn update(
         }, b'e' => {
             state.curr_shape.rotate(false);
         }, b's' => {
-            state.curr_shape.pos.1 =
-                floor(state.curr_shape.pos.1 as f64, 0) as f32;
+            state.curr_shape.pos.1 = floor(state.curr_shape.pos.1 as f64, 0) as f32;
             while can_move(state, Dir::Down) {
                 state.curr_shape.pos.1 += 1.0;
             }
@@ -164,8 +159,7 @@ fn update(
     }
 
     if can_move(state, Dir::Down) {
-        state.curr_shape.pos.1 +=
-            state.fall_spd * (delta_time_ms as f32 / 1_000.0);
+        state.curr_shape.pos.1 += state.fall_spd * (delta_time_ms as f32 / 1_000.0);
     } else if state.land_timer > 0.0 { // Allow a few ms for moving b4 settling
         state.land_timer -= delta_time_ms as f64 / 1_0000.0;
     } else if state.curr_shape.pos.1 <= 1.0 { // Landed at start means death
@@ -215,10 +209,7 @@ fn draw(cnv: &mut Canvas, hs_disp: &Vec<&String>, state: &mut GameState) {
         let x = coord_x * 2 + 1;
         let y = coord_y + SHAPE_DRAW_OFFSET;
 
-        cnv.draw_strs(
-            &vec![ SHAPE_STR ], (x as u16, y as u16),
-            state.curr_shape.fg, &Reset
-        );
+        cnv.draw_strs(&vec![ SHAPE_STR ], (x as u16, y as u16), state.curr_shape.fg, &Reset);
     }
 
     cnv.flush();
@@ -245,14 +236,12 @@ fn can_move(state: &mut GameState, dir: Dir) -> bool {
         }
 
         // Deal with just grid! Not whole display
-        if coord_x < 0 || coord_x >= GRID_WIDTH as i16
-                || coord_y >= GRID_HEIGHT as i16 - 1 {
+        if coord_x < 0 || coord_x >= GRID_WIDTH as i16 || coord_y >= GRID_HEIGHT as i16 - 1 {
             info!("Coord: ({}, {})", coord_x, coord_y);
             return false;
         }
 
-        if coord_y >= 0
-                && state.blocks[coord_y as usize][coord_x as usize] != -1 {
+        if coord_y >= 0 && state.blocks[coord_y as usize][coord_x as usize] != -1 {
             return false;
         }
     }
