@@ -3,7 +3,6 @@
  * Description: High Score save system. Yes, it's overkill
  */
 
-use log::warn;
 use serde::{
     Serialize, Deserialize
 };
@@ -33,7 +32,6 @@ impl SaveData {
     pub fn load_config() -> Self {
         match load(APP_NAME) {
             Err(_) => {
-                warn!("Error in config! Using defaults.");
                 SaveData::default()
             }, Ok(save) => save
         }
@@ -81,7 +79,6 @@ impl SaveData {
         let test_hash = SaveData::get_hash(&salt_and_hs);
 
         if self.high_score_hash != test_hash {
-            warn!("High score has been tampered with! Setting to 0.");
             0
         } else {
             self.high_score

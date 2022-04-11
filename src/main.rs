@@ -8,8 +8,6 @@ mod game;
 mod highscore;
 mod tetromino;
 
-use log4rs::init_file;
-use log::info;
 use std::{
     thread::sleep,
     time::{
@@ -29,7 +27,6 @@ use crate::game::{
 };
 use crate::highscore::SaveData;
 
-const LOG_FILE: &'static str = "logging_config.yaml";
 const MENU: [&'static str; DISP_HEIGHT as usize] = [
     "                      ",
     "╔════════════════════╗",
@@ -60,9 +57,6 @@ const MENU: [&'static str; DISP_HEIGHT as usize] = [
 const MENU_COLOR: &dyn Color = &White;
 
 fn main() {
-    init_file(LOG_FILE, Default::default()).unwrap();
-    info!("Started new game!");
-
     // Load high score from config file
     let save = SaveData::load_config();
     let mut high_score = save.assert_hs();
