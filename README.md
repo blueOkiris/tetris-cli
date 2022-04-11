@@ -24,4 +24,4 @@ Tiny tetris game in a terminal
 
 ## Build dependencies
 
-You should just need the [Rust programming language](https://www.rust-lang.org/tools/install) installed and a Linux machine (Windows cmd is bad).
+You should just need the [Rust programming language](https://www.rust-lang.org/tools/install) installed and a Linux machine (Windows cmd is bad when it comes to terminal graphics).
