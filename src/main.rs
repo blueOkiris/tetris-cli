@@ -10,12 +10,23 @@ mod tetromino;
 
 use log4rs::init_file;
 use log::info;
-use termion::{
-    color::{ Color, White, Reset },
-    terminal_size
+use std::{
+    thread::sleep,
+    time::{
+        Instant, Duration
+    }
 };
-use crate::io::{ DISP_WIDTH, DISP_HEIGHT, Canvas, KeyReader, SHAPE_WIDTH};
-use crate::game::play_game;
+use termion::{
+    color::{
+        Color, White, Reset
+    }, terminal_size
+};
+use crate::io::{
+    DISP_WIDTH, DISP_HEIGHT, Canvas, KeyReader, SHAPE_WIDTH
+};
+use crate::game::{
+    FPS, play_game
+};
 use crate::highscore::SaveData;
 
 const LOG_FILE: &'static str = "logging_config.yaml";
@@ -60,7 +71,7 @@ fn main() {
     let (width, height) = terminal_size().unwrap();
     if width < DISP_WIDTH || height < DISP_HEIGHT {
         println!(
-            "Cannot start game! Terminal window too small. Must be {}x{}",
+            "Cannot start game! Terminal window too small. Must be at least {}x{}",
             DISP_WIDTH, DISP_HEIGHT
         );
         return;
@@ -70,7 +81,19 @@ fn main() {
     let mut inp = KeyReader::new();
 
     // Show the menu and controls before launching the game
+    let mut last_time = Instant::now();
+    let interval_ms = 1_000 / FPS;
     loop {
+        // Keep stable fps
+        let now = Instant::now();
+        let delta_time_ms =
+            (now.duration_since(last_time).subsec_nanos() / 1_000_000) as u64;
+        if delta_time_ms < interval_ms {
+            sleep(Duration::from_millis(interval_ms - delta_time_ms));
+            continue;
+        }
+        last_time = now;
+
         let hs_str = format!("{:020}", high_score);
         let hs_disp = vec![ &hs_str ];
 

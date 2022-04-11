@@ -5,18 +5,24 @@
 
 use std::{
     thread::sleep,
-    time::{ Instant, Duration }
+    time::{
+        Instant, Duration
+    }
 };
 use log::info;
-use termion::color::{ Color, White, Reset };
+use termion::color::{
+    Color, White, Reset
+};
 use math::round::floor;
 use crate::io::{
     Canvas, KeyReader,
     DISP_HEIGHT, GRID_WIDTH, GRID_HEIGHT, SHAPE_WIDTH, SHAPE_STR
 };
-use crate::tetromino::{ SHAPE_COLORS, Tetromino };
+use crate::tetromino::{
+    SHAPE_COLORS, Tetromino
+};
 
-const FPS: u64 = 60;
+pub const FPS: u64 = 60;
 const BORDER: [&'static str; DISP_HEIGHT as usize] = [
     "H:                    ",
     "S:                    ",
@@ -101,7 +107,7 @@ enum UpdateEndState {
 pub fn play_game(
         cnv: &mut Canvas, inp: &mut KeyReader, hs_disp: &Vec<&String>) -> u64 {
     let mut state = GameState::new();
-    
+
     let mut last_time = Instant::now();
     let interval_ms = 1_000 / FPS;
     loop {
