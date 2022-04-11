@@ -9,7 +9,7 @@ use rand::{
     }, Rng, random
 };
 use termion::color::{
-    Color, Magenta, Red, Green, Yellow, Blue, Cyan, LightYellow
+    Color, Magenta, Green, Yellow, Blue, Cyan, LightYellow, LightRed,
 };
 use crate::game::Dir;
 
@@ -39,7 +39,7 @@ const SHAPE_COORDS: [[(i16, i16); 4]; 7] = [
     [ ( 0, -1), (0,  0), ( 0, 1), ( 0, 2) ]
 ];
 pub const SHAPE_COLORS: [&dyn Color; 7] = [
-    &Magenta, &Yellow, &Blue, &Green, &Red, &LightYellow, &Cyan
+    &Magenta, &Yellow, &Blue, &Green, &LightRed, &LightYellow, &Cyan
 ];
 
 #[derive(Copy, Clone, PartialEq)]

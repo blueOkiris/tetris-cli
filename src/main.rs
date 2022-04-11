@@ -25,7 +25,7 @@ use crate::io::{
     DISP_WIDTH, DISP_HEIGHT, Canvas, KeyReader
 };
 use crate::game::{
-    FPS, play_game
+    FPS, GameState
 };
 use crate::highscore::SaveData;
 
@@ -79,6 +79,7 @@ fn main() {
 
     let mut cnv = Canvas::new();
     let mut inp = KeyReader::new();
+    let mut state = GameState::new();
 
     // Show the menu and controls before launching the game
     let mut last_time = Instant::now();
@@ -105,8 +106,11 @@ fn main() {
         let key = inp.get_key();
         match key {
             b'\n' | b'\r' => { // Enter (i.e. start game)
-                high_score = play_game(&mut cnv, &mut inp, &hs_disp);
-                SaveData::save_value(high_score);
+                let new_score = state.play(&mut cnv, &mut inp, &hs_disp);
+                if new_score > high_score {
+                    high_score = new_score;
+                    SaveData::save_value(high_score);
+                }
             }, 127 => break, // Backspace
             _ => {}
         }
