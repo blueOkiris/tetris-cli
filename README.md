@@ -2,9 +2,11 @@
 
 ## Description
 
-Tiny tetris game in a linux terminal
+Tiny tetris game in a terminal
 
-<img src="https://github.com/blueOkiris/tetris-cli/blob/master/screenshot.png"/>
+![screenshot](docs/img/screenshot.png)
+
+(Linux only!)
 
 ## Controls
 
@@ -19,3 +21,7 @@ Tiny tetris game in a linux terminal
  + s -> Drop faster
  
  + Backspace -> Quit
+
+## Build dependencies
+
+You should just need the [Rust programming language](https://www.rust-lang.org/tools/install) installed and a Linux machine (Windows cmd is bad when it comes to terminal graphics).
