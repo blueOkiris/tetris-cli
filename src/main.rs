@@ -35,7 +35,7 @@ const MENU: [&'static str; DISP_HEIGHT as usize] = [
     "╔════════════════════╗",
     "║  T E T R I S  CLI  ║",
     "║ Created by Dylan T ║",
-    "║     circa 2021     ║",
+    "║     circa 2022     ║",
     "║                    ║",
     "║                    ║",
     "║     Controls:      ║",
