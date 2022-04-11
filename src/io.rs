@@ -17,7 +17,7 @@ pub const SHAPE_WIDTH: usize = 2;
 pub const GRID_WIDTH: usize = 10;
 pub const GRID_HEIGHT: usize = 20;
 pub const DISP_WIDTH: u16 = (SHAPE_WIDTH * GRID_WIDTH) as u16 + 2; 
-pub const DISP_HEIGHT: u16 = GRID_HEIGHT as u16 + 4;
+pub const DISP_HEIGHT: u16 = GRID_HEIGHT as u16 + 5;
 
 // An object that lets you draw to it
 pub struct Canvas {

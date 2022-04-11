@@ -46,6 +46,7 @@ const BORDER: [&'static str; DISP_HEIGHT as usize] = [
     "║                    ║",
     "║                    ║",
     "║                    ║",
+    "║                    ║",
     "╚════════════════════╝"
 ];
 const BORDER_COLOR: &dyn Color = &White;
@@ -61,15 +62,15 @@ pub enum Dir {
     Right
 }
 
-struct GameState<'a> {
+struct GameState {
     pub score: u64,
-    pub curr_shape: Tetromino<'a>,
+    pub curr_shape: Tetromino,
     pub fall_spd: f32,
     pub blocks: [[i8; GRID_WIDTH]; GRID_HEIGHT],
     pub land_timer: f64
 }
 
-impl<'a> GameState<'a> {
+impl GameState {
     pub fn new() -> Self {
         Self {
             score: 0,
@@ -160,7 +161,7 @@ fn update(inp: &mut KeyReader, state: &mut GameState, delta_time_ms: u64) -> Upd
         }, b's' => {
             state.curr_shape.pos.1 = floor(state.curr_shape.pos.1 as f64, 0) as f32;
             while can_move(state, Dir::Down) {
-                state.curr_shape.pos.1 += 1.0;
+                state.curr_shape.pos.1 += 0.5; // Make sure not to skip
             }
         }
         _ => {}
@@ -175,7 +176,7 @@ fn update(inp: &mut KeyReader, state: &mut GameState, delta_time_ms: u64) -> Upd
     } else {
         state.score += 10 + (state.fall_spd * 50.0) as u64;
 
-        // TODO: Store blocks
+        save_tetromino(state);
         // TODO: Delete completed rows, score, and increase fall speed
 
         state.land_timer = LAND_TIME_DELAY_S;
@@ -183,6 +184,20 @@ fn update(inp: &mut KeyReader, state: &mut GameState, delta_time_ms: u64) -> Upd
     }
 
     UpdateEndState::Continue
+}
+
+// Permanently store the block data of the current shape after landing
+fn save_tetromino(state: &mut GameState) {
+    let (shape_x, shape_y) = state.curr_shape.pos;
+    let shape_block_x = floor(shape_x as f64, 0) as i16;
+    let shape_block_y = floor(shape_y as f64, 0) as i16;
+    for coord in state.curr_shape.coords {
+        let (mut coord_x, mut coord_y) = coord;
+        coord_x += shape_block_x;
+        coord_y += shape_block_y;
+
+        state.blocks[coord_y as usize][coord_x as usize] = state.curr_shape.fg as i8;
+    }
 }
 
 fn draw(cnv: &mut Canvas, hs_disp: &Vec<&String>, state: &mut GameState) {
@@ -198,7 +213,7 @@ fn draw(cnv: &mut Canvas, hs_disp: &Vec<&String>, state: &mut GameState) {
             if state.blocks[y][x] != -1 {
                 cnv.draw_strs(
                     &vec![ SHAPE_STR ],
-                    ((x * SHAPE_WIDTH + 2) as u16, (y + 2) as u16),
+                    ((x * SHAPE_WIDTH + 2) as u16, (y + SHAPE_DRAW_OFFSET as usize) as u16),
                     SHAPE_COLORS[state.blocks[y][x] as usize], &Reset
                 );
             }
@@ -214,10 +229,12 @@ fn draw(cnv: &mut Canvas, hs_disp: &Vec<&String>, state: &mut GameState) {
         coord_x += shape_block_x;
         coord_y += shape_block_y;
 
-        let x = coord_x * 2 + 1;
+        let x = coord_x * SHAPE_WIDTH as i16 + 2;
         let y = coord_y + SHAPE_DRAW_OFFSET;
 
-        cnv.draw_strs(&vec![ SHAPE_STR ], (x as u16, y as u16), state.curr_shape.fg, &Reset);
+        cnv.draw_strs(
+            &vec![ SHAPE_STR ], (x as u16, y as u16), SHAPE_COLORS[state.curr_shape.fg], &Reset
+        );
     }
 
     cnv.flush();
@@ -247,7 +264,7 @@ fn can_move(state: &mut GameState, dir: Dir) -> bool {
         }
 
         // Deal with just grid! Not whole display
-        if coord_x < 1 || coord_x >= GRID_WIDTH as i16 || coord_y >= GRID_HEIGHT as i16 - 1 {
+        if coord_x < 0 || coord_x >= GRID_WIDTH as i16 || coord_y >= GRID_HEIGHT as i16 {
             return false;
         }
 
@@ -280,7 +297,7 @@ fn can_rotate(state: &mut GameState, dir: Dir) -> bool {
         // NOTE: Unlike can_move, we don't want to adjust the coords
 
         // Deal with just grid! Not whole display
-        if coord_x < 1 || coord_x >= GRID_WIDTH as i16 || coord_y >= GRID_HEIGHT as i16 - 1 {
+        if coord_x < 0 || coord_x >= GRID_WIDTH as i16 || coord_y >= GRID_HEIGHT as i16 {
             return false;
         }
 

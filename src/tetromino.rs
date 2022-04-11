@@ -61,21 +61,21 @@ impl Distribution<ShapeType> for Standard {
 }
 
 #[derive(Clone, Copy)]
-pub struct Tetromino<'a> {
+pub struct Tetromino {
     pub pos: (f32, f32),
     pub shape: ShapeType,
     pub coords: [(i16, i16); 4],
-    pub fg: &'a dyn Color
+    pub fg: usize
 }
 
-impl<'a> Tetromino<'a> {
+impl Tetromino {
     pub fn select() -> Self {
         let shape = random();
         Self {
             pos: (4.0, 0.0),
             shape,
             coords: SHAPE_COORDS[shape as usize],
-            fg: SHAPE_COLORS[shape as usize]
+            fg: shape as usize
         }
     }
 

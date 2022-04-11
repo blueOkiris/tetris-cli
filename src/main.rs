@@ -22,7 +22,7 @@ use termion::{
     }, terminal_size
 };
 use crate::io::{
-    DISP_WIDTH, DISP_HEIGHT, Canvas, KeyReader, SHAPE_WIDTH
+    DISP_WIDTH, DISP_HEIGHT, Canvas, KeyReader
 };
 use crate::game::{
     FPS, play_game
@@ -33,6 +33,7 @@ const LOG_FILE: &'static str = "logging_config.yaml";
 const MENU: [&'static str; DISP_HEIGHT as usize] = [
     "                      ",
     "╔════════════════════╗",
+    "║                    ║",
     "║  T E T R I S  CLI  ║",
     "║ Created by Dylan T ║",
     "║     circa 2022     ║",
@@ -61,7 +62,6 @@ const MENU_COLOR: &dyn Color = &White;
 fn main() {
     init_file(LOG_FILE, Default::default()).unwrap();
     info!("Started new game!");
-    info!("{}", SHAPE_WIDTH);
 
     // Load high score from config file
     let save = SaveData::load_config();
