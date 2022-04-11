@@ -94,6 +94,7 @@ fn main() {
         }
         last_time = now;
 
+        // Conver the loaded high score into a string so we can draw it
         let hs_str = format!("{:020}", high_score);
         let hs_disp = vec![ &hs_str ];
 
@@ -103,7 +104,7 @@ fn main() {
 
         let key = inp.get_key();
         match key {
-            b'\n' | b'\r' => { // Enter
+            b'\n' | b'\r' => { // Enter (i.e. start game)
                 high_score = play_game(&mut cnv, &mut inp, &hs_disp);
                 SaveData::save_value(high_score);
             }, 127 => break, // Backspace

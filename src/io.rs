@@ -82,7 +82,9 @@ pub struct KeyReader {
 impl KeyReader {
     pub fn new() -> Self {
         let inp = async_stdin();
-        Self { inp }
+        Self {
+            inp
+        }
     }
 
     pub fn get_key(&mut self) -> u8 {

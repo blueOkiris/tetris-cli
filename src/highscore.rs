@@ -4,12 +4,19 @@
  */
 
 use log::warn;
-use serde::{ Serialize, Deserialize };
-use confy::{ load, store };
-use rand::{ Rng, thread_rng };
+use serde::{
+    Serialize, Deserialize
+};
+use confy::{
+    load, store
+};
+use rand::{
+    Rng, thread_rng
+};
 use std::{
-    hash::{ Hash, Hasher },
-    collections::hash_map::DefaultHasher
+    hash::{
+        Hash, Hasher
+    }, collections::hash_map::DefaultHasher
 };
 
 const APP_NAME: &'static str = "tetris-cli";

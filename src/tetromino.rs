@@ -4,13 +4,14 @@
  */
 
 use rand::{
-    distributions::{ Distribution, Standard },
-    Rng, random
+    distributions::{
+        Distribution, Standard
+    }, Rng, random
 };
 use termion::color::{
     Color, Magenta, Red, Green, Yellow, Blue, Cyan, LightYellow
 };
-
+use crate::game::Dir;
 
 /*
  * Shape could be -2 to 2 in all directions (bc rotations)
@@ -59,6 +60,7 @@ impl Distribution<ShapeType> for Standard {
     }
 }
 
+#[derive(Clone, Copy)]
 pub struct Tetromino<'a> {
     pub pos: (f32, f32),
     pub shape: ShapeType,
@@ -77,17 +79,17 @@ impl<'a> Tetromino<'a> {
         }
     }
 
-    pub fn rotate(&mut self, is_left: bool) {
+    pub fn rotate(&mut self, dir: Dir) {
         if self.shape == ShapeType::Square {
             return;
         }
 
         for i in 0..4 {
             let (x, y) = self.coords[i];
-            if is_left {
-                self.coords[i] = (y, -x);
-            } else {
-                self.coords[i] = (-y, x);
+            match dir {
+                Dir::Left => self.coords[i] = (y, -x),
+                Dir::Right => self.coords[i] = (-y, x),
+                _ => {}
             }
         }
     }

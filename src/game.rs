@@ -55,7 +55,12 @@ const SHAPE_DRAW_OFFSET: i16 = 5;
 const INITIAL_FALL_SPD: f32 = 0.9;
 const LAND_TIME_DELAY_S: f64 = 0.1;
 
-enum Dir { Down, Left, Right }
+#[derive(PartialEq, Clone, Copy)]
+pub enum Dir {
+    Down,
+    Left,
+    Right
+}
 
 struct GameState<'a> {
     pub score: u64,
@@ -146,9 +151,13 @@ fn update(inp: &mut KeyReader, state: &mut GameState, delta_time_ms: u64) -> Upd
                 state.curr_shape.pos.0 += 1.0;
             }
         }, b'q' => {
-            state.curr_shape.rotate(true);
+            if can_rotate(state, Dir::Left) {
+                state.curr_shape.rotate(Dir::Left);
+            }
         }, b'e' => {
-            state.curr_shape.rotate(false);
+            if can_rotate(state, Dir::Right) {
+                state.curr_shape.rotate(Dir::Right);
+            }
         }, b's' => {
             state.curr_shape.pos.1 = floor(state.curr_shape.pos.1 as f64, 0) as f32;
             while can_move(state, Dir::Down) {
@@ -215,7 +224,9 @@ fn draw(cnv: &mut Canvas, hs_disp: &Vec<&String>, state: &mut GameState) {
     cnv.flush();
 }
 
+// Check if a block is able to move in a given direction
 fn can_move(state: &mut GameState, dir: Dir) -> bool {
+    // Get position in a grid format (we want slow movement, so we use actually use floats)
     let (shape_x, shape_y) = state.curr_shape.pos;
     let shape_block_x = floor(shape_x as f64, 0) as i16;
     let shape_block_y = floor(shape_y as f64, 0) as i16;
@@ -225,6 +236,7 @@ fn can_move(state: &mut GameState, dir: Dir) -> bool {
         coord_x += shape_block_x;
         coord_y += shape_block_y;
 
+        // Adjust the x/y in the direction we want to test
         match dir {
             Dir::Left => {
                 coord_x -= 1;
@@ -236,8 +248,40 @@ fn can_move(state: &mut GameState, dir: Dir) -> bool {
         }
 
         // Deal with just grid! Not whole display
-        if coord_x < 0 || coord_x >= GRID_WIDTH as i16 || coord_y >= GRID_HEIGHT as i16 - 1 {
-            info!("Coord: ({}, {})", coord_x, coord_y);
+        if coord_x < 1 || coord_x >= GRID_WIDTH as i16 || coord_y >= GRID_HEIGHT as i16 - 1 {
+            return false;
+        }
+
+        if coord_y >= 0 && state.blocks[coord_y as usize][coord_x as usize] != -1 {
+            return false;
+        }
+    }
+    true
+}
+
+// Basically check if "can_move" to the current position after rotation
+fn can_rotate(state: &mut GameState, dir: Dir) -> bool {
+    if dir == Dir::Down {
+        return true;
+    }
+
+    // Create temp shape and rotate it
+    let mut temp_shape = state.curr_shape.clone();
+    temp_shape.rotate(dir);
+
+    // Check if it's valid
+    let (shape_x, shape_y) = temp_shape.pos;
+    let shape_block_x = floor(shape_x as f64, 0) as i16;
+    let shape_block_y = floor(shape_y as f64, 0) as i16;
+    for coord in temp_shape.coords {
+        let (mut coord_x, mut coord_y) = coord;
+        coord_x += shape_block_x;
+        coord_y += shape_block_y;
+
+        // NOTE: Unlike can_move, we don't want to adjust the coords
+
+        // Deal with just grid! Not whole display
+        if coord_x < 1 || coord_x >= GRID_WIDTH as i16 || coord_y >= GRID_HEIGHT as i16 - 1 {
             return false;
         }
 
