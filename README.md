@@ -12,17 +12,12 @@ Available for Arch on the AUR as [tetris-cli-git](https://aur.archlinux.org/pack
 
 ## Controls
 
- + a -> Move left
-
- + d -> Move right
- 
- + q -> Rotate left
- 
- + e -> Rotate right
- 
- + s -> Drop faster
- 
- + Backspace -> Quit
++ a -> Move left
++ d -> Move right
++ q -> Rotate left
++ e -> Rotate right
++ s -> Instant drop
++ Backspace -> Quit
 
 ## Build dependencies
 
