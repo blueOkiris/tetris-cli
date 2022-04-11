@@ -9,7 +9,6 @@ use std::{
         Instant, Duration
     }
 };
-use log::info;
 use termion::color::{
     Color, White, Reset
 };
