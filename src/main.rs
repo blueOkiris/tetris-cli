@@ -73,7 +73,6 @@ fn main() {
 
     let mut cnv = Canvas::new();
     let mut inp = KeyReader::new();
-    let mut state = GameState::new();
 
     // Show the menu and controls before launching the game
     let mut last_time = Instant::now();
@@ -100,6 +99,7 @@ fn main() {
         let key = inp.get_key();
         match key {
             b'\n' | b'\r' => { // Enter (i.e. start game)
+                let mut state = GameState::new();
                 let new_score = state.play(&mut cnv, &mut inp, &hs_disp);
                 if new_score > high_score {
                     high_score = new_score;
