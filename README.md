@@ -10,7 +10,9 @@ Install with `cargo install tetris-cli`
 
 Requires a Linux or other \*nix Terminal (i.e. won't work in Windows Terminal)
 
-Also available for Arch on the AUR as [tetris-cli-git](https://aur.archlinux.org/packages/tetris-terminal-git)
+Available for Arch on the AUR as [tetris-cli-git](https://aur.archlinux.org/packages/tetris-terminal-git)
+
+and on NetBSD [tetris-cli](https://pkgsrc.se/games/tetris-cli) from the official repositories.
 
 ## Controls
 
