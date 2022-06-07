@@ -10,6 +10,8 @@ Tiny tetris game in a terminal
 
 Available for Arch on the AUR as [tetris-cli-git](https://aur.archlinux.org/packages/tetris-terminal-git)
 
+Or install with `cargo install tetris-cli`
+
 ## Controls
 
 + a -> Move left
