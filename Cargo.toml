@@ -1,7 +1,11 @@
 [package]
 name = "tetris-cli"
-version = "21.411.1"
+version = "22.66.1"
 edition = "2021"
+description = "A tetris clone for your terminal."
+license = "GPL3"
+license-file = "LICENSE"
+repository = "https://github.com/blueOkiris/tetris-cli"
 
 [dependencies]
 termion = "1.5.6"
