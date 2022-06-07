@@ -1,6 +1,6 @@
 [package]
 name = "tetris-cli"
-version = "22.67.1"
+version = "22.67.2"
 edition = "2021"
 description = "A tetris clone for your terminal."
 license = "GPL-3.0"

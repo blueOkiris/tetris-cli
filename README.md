@@ -23,5 +23,5 @@ Also available for Arch on the AUR as [tetris-cli-git](https://aur.archlinux.org
 
 ## Build dependencies
 
-You should just need the [Rust programming language](https://www.rust-lang.org/tools/install) installed and a Linux machine (Windows cmd is bad when it comes to terminal graphics).
+You should just need the [Rust programming language](https://www.rust-lang.org/tools/install) installed and a \*nix machine (Windows cmd is bad when it comes to terminal graphics).
 
