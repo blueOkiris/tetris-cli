@@ -40,8 +40,8 @@ const MENU: [&'static str; DISP_HEIGHT as usize] = [
     "║ - a/d - left/right ║",
     "║   - q/e - rotate   ║",
     "║ - s -> drop piece  ║",
+    "║    - p -> pause    ║",
     "║   - back -> quit   ║",
-    "║                    ║",
     "║                    ║",
     "║                    ║",
     "║  Enter to begin... ║",
@@ -52,7 +52,7 @@ const MENU: [&'static str; DISP_HEIGHT as usize] = [
     "║                    ║",
     "║                    ║",
     "╚════════════════════╝",
-    "                      "
+    "                      ",
 ];
 const MENU_COLOR: &dyn Color = &White;
 

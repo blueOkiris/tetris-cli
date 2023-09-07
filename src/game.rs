@@ -49,6 +49,11 @@ const BORDER: [&'static str; DISP_HEIGHT as usize] = [
     "║                    ║",
     "╚════════════════════╝"
 ];
+const PAUSE: [&'static str; 3 as usize] = [
+    "╔════════╗",
+    "║ PAUSED ║",
+    "╚════════╝"
+];
 const BORDER_COLOR: &dyn Color = &White;
 const SCORE_COLOR: &dyn Color = &White;
 const SHAPE_DRAW_OFFSET: i16 = 5;
@@ -77,7 +82,8 @@ pub struct GameState {
 enum UpdateEndState {
     Quit,
     Lost,
-    Continue
+    Continue,
+    Pause
 }
 
 impl GameState {
@@ -130,6 +136,13 @@ impl GameState {
                     return 0;
                 }, UpdateEndState::Lost => {
                     break;
+                },
+                UpdateEndState::Pause => {
+                    // Keep the game paused until 'p' is pressed again
+                    while inp.get_key() != b'p' {
+                        cnv.draw_strs(&PAUSE.to_vec(), (7, 13), BORDER_COLOR, &Reset); // Drawing the pause text
+                        sleep(Duration::from_millis(interval_ms));
+                    }
                 }
             }
             self.draw(cnv, hs_disp);
@@ -142,6 +155,7 @@ impl GameState {
         let key = inp.get_key();
         match key {
             127 => return UpdateEndState::Quit, // Backspace -> back to menu
+            b'p' => return UpdateEndState::Pause, // p -> Pause
             b'a' => {
                 if self.can_move_curr_shape(Dir::Left) {
                     self.curr_shape.pos.0 -= 1.0;
