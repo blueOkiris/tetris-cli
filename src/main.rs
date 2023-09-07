@@ -52,7 +52,7 @@ const MENU: [&'static str; DISP_HEIGHT as usize] = [
     "║                    ║",
     "║                    ║",
     "╚════════════════════╝",
-    "                      ",
+    "                      "
 ];
 const MENU_COLOR: &dyn Color = &White;
 
