@@ -280,7 +280,7 @@ dependencies = [
 
 [[package]]
 name = "tetris-cli"
-version = "22.67.2"
+version = "23.96.1"
 dependencies = [
  "big_num",
  "confy",

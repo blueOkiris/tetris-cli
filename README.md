@@ -21,6 +21,7 @@ and on NetBSD [tetris-cli](https://pkgsrc.se/games/tetris-cli) from the official
 + q -> Rotate left
 + e -> Rotate right
 + s -> Instant drop
++ p -> Pause
 + Backspace -> Quit
 
 ## Build dependencies
