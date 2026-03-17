@@ -143,6 +143,8 @@ impl GameState {
                         cnv.draw_strs(&PAUSE.to_vec(), (7, 13), BORDER_COLOR, &Reset); // Drawing the pause text
                         sleep(Duration::from_millis(interval_ms));
                     }
+                    // prevent counting the paused time as elapsed time
+                    last_time = Instant::now();
                 }
             }
             self.draw(cnv, hs_disp);
